@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>刘子超 — 漫游者的地图</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Serif+SC:wght@300;400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" crossorigin>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --dark:#0f0e0b;--dark2:#1a1812;--dark3:#252318;
+  --parchment:#f5f0e8;--parch2:#ebe4d6;--parch3:#d8cfc0;
+  --ink:#f5f0e8;--ink80:rgba(245,240,232,.8);--ink60:rgba(245,240,232,.6);
+  --ink40:rgba(245,240,232,.4);--ink20:rgba(245,240,232,.2);--ink10:rgba(245,240,232,.1);
+  --ink05:rgba(245,240,232,.05);
+  --accent:#c45a3c;--accent-glow:rgba(196,90,60,.3);
+  --europe:#4a7c9b;--asia:#b8963e;--monsoon:#5a8a5a;--balkan:#9e3a6e;
+  --noise-opacity:0.025;
+  --nav-bg:rgba(15,14,11,0.92);
+  --mm-bg:rgba(15,14,11,.98);
+}
+[data-theme="light"]{
+  --dark:#f5f0e8;--dark2:#ebe4d6;--dark3:#d8cfc0;
+  --parchment:#0f0e0b;--parch2:#1a1812;--parch3:#252318;
+  --ink:#1a1812;--ink80:rgba(26,24,18,.8);--ink60:rgba(26,24,18,.6);
+  --ink40:rgba(26,24,18,.4);--ink20:rgba(26,24,18,.2);--ink10:rgba(26,24,18,.1);
+  --ink05:rgba(26,24,18,.05);
+  --accent:#b04a2e;--accent-glow:rgba(176,74,46,.2);
+  --europe:#3a6c8b;--asia:#a08030;--monsoon:#4a7a4a;--balkan:#8e2a5e;
+  --noise-opacity:0.015;
+  --nav-bg:rgba(245,240,232,0.92);
+  --mm-bg:rgba(245,240,232,.98);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--dark);color:var(--ink);font-family:'Noto Serif SC',serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:var(--noise-opacity);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ===== NAV ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;gap:2rem;transition:all 0.4s}
+nav.scrolled{background:var(--nav-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--ink10)}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--ink);text-decoration:none;opacity:.8;transition:opacity .3s;white-space:nowrap;flex-shrink:0}
+.nav-logo:hover{opacity:1}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-family:'EB Garamond',serif;font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink40);text-decoration:none;transition:color 0.3s;position:relative}
+.nav-links a:hover{color:var(--accent)}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--accent);transition:width .3s}
+.nav-links a:hover::after{width:100%}
+
+/* ===== MAP HERO ===== */
+.map-hero{position:relative;min-height:100vh;display:flex;flex-direction:column;background:var(--dark)}
+
+.map-header{
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  padding:5rem 3rem 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  pointer-events:none;
+}
+.map-header>*{pointer-events:auto}
+.map-identity{max-width:400px}
+.map-id-label{font-family:'EB Garamond',serif;font-size:0.65rem;letter-spacing:0.4em;text-transform:uppercase;color:var(--accent);margin-bottom:0.8rem;opacity:0;animation:fadeIn .8s ease .5s forwards}
+.map-id-name{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5vw,3.5rem);font-weight:700;line-height:1.05;letter-spacing:-0.01em;opacity:0;animation:fadeIn .8s ease .7s forwards}
+.map-id-cn{font-family:'Noto Serif SC',serif;font-size:1rem;letter-spacing:0.4em;color:var(--ink60);margin-top:0.4rem;opacity:0;animation:fadeIn .8s ease .9s forwards}
+.map-id-tagline{font-family:'EB Garamond',serif;font-style:italic;font-size:0.9rem;color:var(--ink40);margin-top:1.2rem;line-height:1.7;max-width:320px;opacity:0;animation:fadeIn .8s ease 1.1s forwards}
+
+.map-nav{
+  display:flex;flex-direction:column;gap:0.4rem;
+  padding-top:1rem;
+  opacity:0;animation:fadeIn .8s ease 1.3s forwards;
+}
+.map-nav-btn{
+  font-family:'EB Garamond',serif;font-size:0.75rem;letter-spacing:0.1em;
+  padding:0.5rem 1.2rem;text-align:right;
+  border:none;background:transparent;color:var(--ink40);
+  cursor:pointer;transition:all 0.3s;position:relative;
+}
+.map-nav-btn::before{content:'';position:absolute;right:0;top:50%;width:0;height:1px;background:var(--accent);transition:width .3s;transform:translateY(-50%)}
+.map-nav-btn:hover{color:var(--ink80)}
+.map-nav-btn:hover::before{width:20px;right:auto;left:-24px}
+.map-nav-btn.active{color:var(--ink);font-weight:600}
+.map-nav-btn.active::before{width:20px;right:auto;left:-24px;background:var(--accent)}
+.map-nav-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px;vertical-align:middle;opacity:.6}
+
+.map-canvas{flex:1;position:relative;display:flex;align-items:center;justify-content:center;padding:2rem;min-height:100vh}
+.map-svg{width:100%;max-width:1400px;height:auto;display:block}
+.map-svg text{font-family:'EB Garamond',serif}
+.journey-group{transition:opacity 0.6s ease;cursor:pointer}
+.city-dot{cursor:pointer}
+.city-dot circle{transition:all 0.3s}
+.city-dot:hover circle{r:5;opacity:1}
+@keyframes draw{from{stroke-dashoffset:2000}to{stroke-dashoffset:0}}
+.route-path{stroke-dasharray:2000;stroke-dashoffset:2000}
+.route-path.animate{animation:draw 3s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes bj-pulse{0%,100%{opacity:.4;r:5}50%{opacity:0;r:10}}
+.bj-ring{animation:bj-pulse 3s ease-in-out infinite}
+
+/* Map bottom info bar */
+.map-bottom{
+  position:absolute;bottom:0;left:0;right:0;z-index:10;
+  padding:0 3rem 2rem;
+  display:flex;justify-content:space-between;align-items:flex-end;
+  pointer-events:none;
+}
+.map-bottom>*{pointer-events:auto}
+.map-info-card{
+  max-width:420px;
+  padding:1.5rem 2rem;border:1px solid var(--ink10);
+  background:rgba(15,14,11,0.85);backdrop-filter:blur(8px);
+  opacity:0;transform:translateY(20px);
+  transition:all 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.map-info-card.show{opacity:1;transform:translateY(0)}
+.mic-year{font-family:'EB Garamond',serif;font-size:0.7rem;letter-spacing:0.2em;margin-bottom:0.4rem}
+.mic-book{font-family:'Noto Serif SC',serif;font-weight:700;font-size:1.2rem;margin-bottom:0.2rem}
+.mic-en{font-family:'Playfair Display',serif;font-style:italic;font-size:0.85rem;color:var(--ink40);margin-bottom:0.8rem}
+.mic-desc{font-size:0.82rem;line-height:1.7;color:var(--ink60);margin-bottom:0.8rem}
+.mic-cities{font-family:'EB Garamond',serif;font-size:0.72rem;color:var(--ink20);letter-spacing:0.05em}
+.mic-link{display:inline-block;margin-top:0.8rem;font-family:'EB Garamond',serif;font-size:0.75rem;color:var(--accent);text-decoration:none;letter-spacing:0.1em;transition:opacity .3s}
+.mic-link:hover{opacity:.7}
+
+.map-legend{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center}
+.legend-item{display:flex;align-items:center;gap:5px;font-family:'EB Garamond',serif;font-size:0.68rem;color:var(--ink20);letter-spacing:0.05em}
+.legend-dot{width:6px;height:6px;border-radius:50%}
+
+.map-scroll-hint{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:10;
+  display:flex;flex-direction:column;align-items:center;gap:0.4rem;
+  opacity:0;animation:fadeIn 1s ease 2s forwards;transition:opacity .5s;
+}
+.map-scroll-hint.hidden{opacity:0!important}
+.map-scroll-hint span{font-family:'EB Garamond',serif;font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--ink20)}
+.scroll-line{width:1px;height:30px;background:var(--accent);animation:pulse-line 2s ease-in-out infinite}
+@keyframes pulse-line{0%,100%{opacity:.2;transform:scaleY(.5)}50%{opacity:.8;transform:scaleY(1)}}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ===== CONTENT SECTIONS ===== */
+.content{position:relative;z-index:1}
+
+/* Section common */
+.sec{padding:6rem 3rem;position:relative;border-top:1px solid var(--ink05)}
+.sec-inner{max-width:960px;margin:0 auto}
+.sec-label{font-family:'EB Garamond',serif;font-size:0.65rem;letter-spacing:0.4em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;display:flex;align-items:center;gap:0.8rem}
+.sec-label::before{content:'';width:24px;height:1px;background:var(--accent)}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:700;margin-bottom:2.5rem;line-height:1.2}
+
+/* ===== ABOUT (dark) ===== */
+.about{background:var(--dark2)}
+.about-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:4rem;align-items:start}
+.about-portrait{aspect-ratio:3/4;position:relative;overflow:hidden;border:1px solid var(--ink10)}
+.about-portrait-inner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'EB Garamond',serif;color:var(--ink20);font-style:italic;font-size:0.85rem;background:var(--dark3)}
+.about-portrait-inner svg{width:48px;height:48px;margin-bottom:0.8rem;opacity:0.2}
+.about-portrait::after{content:'';position:absolute;inset:0;border:1px solid var(--ink05);margin:10px;pointer-events:none}
+.about-text{font-size:0.95rem;line-height:2;color:var(--ink60)}
+.about-text p{margin-bottom:1.2rem}
+.about-text .hl{color:var(--ink80);font-weight:600}
+.about-tags{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:1.5rem}
+.about-tag{padding:0.4rem 0.9rem;border:1px solid var(--ink10);font-family:'EB Garamond',serif;font-size:0.72rem;letter-spacing:0.08em;color:var(--ink40);transition:all .3s}
+.about-tag:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ===== BOOKS (dark with cards) ===== */
+.books{background:var(--dark)}
+.books-grid{display:grid;gap:1px;background:var(--ink05)}
+.book-card{
+  display:grid;grid-template-columns:200px 1fr;
+  gap:0;background:var(--dark2);
+  transition:all .4s;position:relative;overflow:hidden;
+}
+.book-card:hover{background:var(--dark3)}
+.book-card-cover{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:2.5rem 1.5rem;border-right:1px solid var(--ink05);
+  position:relative;
+}
+.bcc-num{font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;color:var(--accent);opacity:.1;position:absolute;top:1rem;left:1.2rem}
+.bcc-title{font-family:'Noto Serif SC',serif;font-weight:700;font-size:1.05rem;text-align:center;line-height:1.5;margin-bottom:0.3rem}
+.bcc-line{width:20px;height:1px;background:var(--accent);margin:0.6rem auto}
+.bcc-sub{font-family:'EB Garamond',serif;font-style:italic;font-size:0.72rem;color:var(--ink40);text-align:center}
+.book-card-info{padding:2.5rem 2rem}
+.bci-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:0.2rem;flex-wrap:wrap}
+.bci-head h3{font-family:'Noto Serif SC',serif;font-weight:700;font-size:1.2rem}
+.bci-head .bci-en{font-family:'Playfair Display',serif;font-style:italic;font-size:0.85rem;color:var(--ink40)}
+.bci-meta{font-family:'EB Garamond',serif;font-size:0.72rem;color:var(--ink20);letter-spacing:0.08em;margin-bottom:1rem;display:flex;gap:1.2rem}
+.bci-desc{font-size:0.88rem;line-height:1.85;color:var(--ink60);margin-bottom:1rem}
+.bci-awards{display:flex;flex-wrap:wrap;gap:0.4rem}
+.bci-award{font-family:'EB Garamond',serif;font-size:0.68rem;padding:0.25rem 0.6rem;border:1px solid rgba(196,90,60,.2);color:var(--accent);background:rgba(196,90,60,.05)}
+
+/* ===== TRANSLATIONS ===== */
+.translations{background:var(--dark2)}
+.trans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--ink05)}
+.trans-card{padding:2rem;background:var(--dark);transition:all .3s}
+.trans-card:hover{background:var(--dark3)}
+.trans-card h4{font-family:'Noto Serif SC',serif;font-weight:600;font-size:1rem;margin-bottom:0.3rem}
+.trans-card .tc-en{font-family:'EB Garamond',serif;font-style:italic;font-size:0.82rem;color:var(--ink40);margin-bottom:0.4rem}
+.trans-card .tc-author{font-family:'EB Garamond',serif;font-size:0.75rem;color:var(--ink40)}
+
+/* ===== QUOTES ===== */
+.voices{background:var(--dark);padding:6rem 3rem}
+.voices-inner{max-width:700px;margin:0 auto;text-align:center}
+.voice{margin-bottom:3rem}
+.voice-text{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.1rem,2.5vw,1.6rem);line-height:1.7;color:var(--ink80);margin-bottom:0.8rem}
+.voice-src{font-family:'EB Garamond',serif;font-size:0.72rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--ink40)}
+.voice-div{width:30px;height:1px;background:var(--accent);margin:2.5rem auto}
+
+/* ===== TIMELINE ===== */
+.timeline{background:var(--dark2)}
+.tl-list{position:relative;padding-left:2.5rem}
+.tl-list::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--ink10)}
+.tl-item{position:relative;padding:1.2rem 0 1.2rem 1.5rem}
+.tl-item::before{content:'';position:absolute;left:-2.8rem;top:1.6rem;width:6px;height:6px;border-radius:50%;border:1.5px solid var(--accent);background:var(--dark2)}
+.tl-yr{font-family:'EB Garamond',serif;font-size:0.7rem;letter-spacing:0.2em;color:var(--accent);margin-bottom:0.2rem}
+.tl-tx{font-size:0.88rem;line-height:1.7;color:var(--ink60)}
+
+/* ===== FOOTER ===== */
+footer{background:var(--dark);border-top:1px solid var(--ink05);padding:4rem 3rem;text-align:center}
+.ft-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;opacity:.6;margin-bottom:.3rem}
+.ft-cn{font-family:'Noto Serif SC',serif;font-size:0.8rem;letter-spacing:0.5em;opacity:.2;margin-bottom:1.5rem}
+.ft-line{width:30px;height:1px;background:var(--accent);margin:0 auto 1.5rem}
+.ft-quote{font-family:'EB Garamond',serif;font-style:italic;font-size:0.82rem;opacity:.25;max-width:350px;margin:0 auto 1.5rem;line-height:1.7}
+.ft-social{display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:1.5rem}
+.ft-social-link{font-family:'EB Garamond',serif;font-size:.78rem;letter-spacing:.1em;color:var(--ink40);text-decoration:none;transition:color .3s}
+.ft-social-link:hover{color:var(--accent)}
+.ft-social-sep{color:var(--ink10);font-size:.6rem}
+.ft-copy{font-family:'EB Garamond',serif;font-size:0.65rem;letter-spacing:0.15em;opacity:.15}
+
+/* ===== CITY LIGHTBOX ===== */
+.lightbox{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s ease}
+.lightbox.open{opacity:1;pointer-events:auto}
+.lb-backdrop{position:absolute;inset:0;background:rgba(10,9,7,.92);backdrop-filter:blur(16px)}
+.lb-content{position:relative;z-index:1;max-width:680px;width:90%;max-height:90vh;overflow-y:auto;scrollbar-width:none}
+.lb-content::-webkit-scrollbar{display:none}
+.lb-close{position:absolute;top:0;right:0;z-index:2;width:40px;height:40px;border:none;background:transparent;color:var(--ink40);font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .3s}
+.lb-close:hover{color:var(--ink)}
+.lb-header{margin-bottom:1.5rem}
+.lb-city{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
+.lb-book{font-family:'EB Garamond',serif;font-style:italic;font-size:.82rem;letter-spacing:.08em}
+.lb-photos{display:grid;gap:12px}
+.lb-photo{position:relative;overflow:hidden;border:1px solid var(--ink10)}
+.lb-photo-img{width:100%;aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.lb-photo-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;font-family:'EB Garamond',serif;font-size:.75rem;color:var(--ink20);letter-spacing:.08em}
+.lb-photo-placeholder svg{width:32px;height:32px;opacity:.15}
+.lb-photo-caption{padding:.6rem .8rem;font-family:'EB Garamond',serif;font-size:.72rem;color:var(--ink40);line-height:1.5;border-top:1px solid var(--ink05)}
+.lb-photo-caption em{color:var(--ink20);font-style:normal;margin-left:.3rem}
+.lb-hint{margin-top:1rem;font-family:'EB Garamond',serif;font-size:.68rem;color:var(--ink10);text-align:center;letter-spacing:.1em}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .map-header{padding:5rem 1.5rem 0;flex-direction:column;gap:1.5rem}
+  .map-nav{flex-direction:row;flex-wrap:wrap}
+  .map-bottom{padding:0 1.5rem 1.5rem;flex-direction:column;gap:1rem}
+  .map-info-card{max-width:100%}
+  .about-grid{grid-template-columns:1fr;gap:2rem}
+  .about-portrait{max-width:280px;margin:0 auto}
+  .book-card{grid-template-columns:1fr}
+  .book-card-cover{border-right:none;border-bottom:1px solid var(--ink05);padding:2rem}
+  .trans-grid{grid-template-columns:1fr}
+  nav .nav-links{display:none}
+  .sec{padding:4rem 1.5rem}
+}
+@media(max-width:600px){
+  .map-header{padding:4.5rem 1rem 0}
+  .map-bottom{padding:0 1rem 1rem}
+  .map-nav-btn{font-size:.68rem;padding:.4rem .8rem}
+}
+
+.bci-more{display:inline-block;margin-top:.8rem;font-family:'EB Garamond',serif;font-size:.72rem;color:var(--accent);text-decoration:none;letter-spacing:.1em;transition:opacity .3s;border-bottom:1px solid rgba(196,90,60,.3);padding-bottom:2px}.bci-more:hover{opacity:.7}
+
+/* Reveal */
+.rv{opacity:0;transform:translateY(30px);transition:all 0.7s cubic-bezier(0.16,1,0.3,1)}
+.rv.vis{opacity:1;transform:translateY(0)}
+.rv1{transition-delay:.1s}.rv2{transition-delay:.2s}.rv3{transition-delay:.3s}
+
+/* ===== NAV CONTROLS ===== */
+.nav-controls{display:flex;align-items:center;gap:.5rem;margin-left:auto;margin-right:1.5rem}
+.nav-ctrl-btn{border:none;background:none;cursor:pointer;color:var(--ink40);transition:color .3s;font-family:'EB Garamond',serif;font-size:.75rem;letter-spacing:.08em;padding:6px 8px;display:flex;align-items:center;gap:4px}
+.nav-ctrl-btn:hover{color:var(--accent)}
+.theme-icon-moon{display:none}
+[data-theme="light"] .theme-icon-sun{display:none}
+[data-theme="light"] .theme-icon-moon{display:block}
+[data-theme="light"] .about-portrait-inner svg{opacity:.85}
+[data-theme="light"] .about-portrait-inner svg g{opacity:.75}
+
+/* ===== SOCIAL ICONS (footer) ===== */
+.city-dot[role="button"]{cursor:pointer;outline:none}
+.city-dot[role="button"]:focus-visible circle{stroke:var(--accent);stroke-width:2}
+
+.ft-social-link{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;border:1px solid var(--ink10);transition:all .3s}
+.ft-social-link:hover{border-color:var(--accent);color:var(--accent)}
+.ft-social-link svg{width:18px;height:18px}
+.ft-social-sep{display:none}
+
+/* ===== HAMBURGER MENU ===== */
+.nav-burger{display:none;border:none;background:none;cursor:pointer;padding:8px;z-index:201;position:relative}
+.nav-burger span{display:block;width:22px;height:1.5px;background:var(--ink60);margin:5px 0;transition:all .3s}
+.nav-burger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.nav-burger.open span:nth-child(2){opacity:0}
+.nav-burger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+.mobile-menu{position:fixed;inset:0;z-index:199;background:var(--mm-bg);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s}
+.mobile-menu.open{opacity:1;pointer-events:auto}
+.mm-inner{display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+.mm-link{font-family:'Noto Serif SC',serif;font-size:1.4rem;color:var(--ink60);text-decoration:none;letter-spacing:.2em;transition:color .3s}
+.mm-link:hover,.mm-link:active{color:var(--accent)}
+
+/* ===== MOBILE JOURNEY CARDS ===== */
+.mobile-journeys{display:none}
+.mj-cards{overflow-x:auto;scroll-snap-type:x mandatory;display:flex;gap:0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mj-cards::-webkit-scrollbar{display:none}
+.mj-card{min-width:100%;scroll-snap-align:start;padding:2rem 1.5rem;position:relative;border-top:2px solid}
+.mj-color{position:absolute;top:0;right:1.5rem;width:40px;height:3px;border-radius:0 0 2px 2px}
+.mj-year{font-family:'EB Garamond',serif;font-size:.72rem;letter-spacing:.2em;color:var(--ink20);margin-bottom:.5rem}
+.mj-title{font-family:'Noto Serif SC',serif;font-weight:700;font-size:1.3rem;margin-bottom:.2rem}
+.mj-en{font-family:'Playfair Display',serif;font-style:italic;font-size:.85rem;color:var(--ink40);margin-bottom:.3rem}
+.mj-sub{font-family:'EB Garamond',serif;font-size:.75rem;color:var(--ink20);letter-spacing:.08em;margin-bottom:1rem}
+.mj-cities{display:flex;flex-wrap:wrap;gap:.4rem}
+.mj-city{font-family:'EB Garamond',serif;font-size:.72rem;padding:.35rem .7rem;border:1px solid var(--ink10);color:var(--ink40);cursor:pointer;transition:all .3s;min-height:44px;display:flex;align-items:center}
+.mj-city:active{border-color:var(--accent);color:var(--accent)}
+.mj-dots{display:flex;justify-content:center;gap:.6rem;padding:1rem 0}
+.mj-dot{width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;transition:all .3s;min-width:44px;min-height:44px;background:transparent!important;position:relative}
+.mj-dot::after{content:'';position:absolute;width:8px;height:8px;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}
+.mj-dot[data-i="0"]::after{background:var(--europe)}
+.mj-dot[data-i="1"]::after{background:var(--asia)}
+.mj-dot[data-i="2"]::after{background:var(--monsoon)}
+.mj-dot[data-i="3"]::after{background:var(--balkan)}
+.mj-dot.active::after{width:12px;height:12px}
+.mj-dot:not(.active)::after{opacity:.4}
+
+@media(max-width:900px){
+  .nav-burger{display:block}
+  .nav-controls{margin-right:.5rem}
+  .mobile-journeys{display:block;padding:0 0 1rem}
+  .map-canvas{display:none}
+  .map-header{position:relative;padding:5rem 1.5rem 1.5rem}
+  .map-nav{display:none}
+  .map-bottom{display:none}
+}
+
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){
+  .rv{transition:none;opacity:1;transform:none}
+  .route-path{animation:none;stroke-dashoffset:0}
+  @keyframes bj-pulse{0%,100%{opacity:.4}}
+  .scroll-line{animation:none}
+  .map-info-card{transition:none}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="#map" class="nav-logo">刘子超 Liu Zichao</a>
+  <ul class="nav-links">
+    <li><a href="#about" data-i18n="nav.about">关于</a></li>
+    <li><a href="#books" data-i18n="nav.books">作品</a></li>
+    <li><a href="#translations" data-i18n="nav.translations">译作</a></li>
+    <li><a href="#timeline" data-i18n="nav.timeline">年表</a></li>
+  </ul>
+  <div class="nav-controls">
+    <button class="nav-ctrl-btn" id="langToggle" aria-label="Switch language" title="中/EN">
+      <span id="langLabel">EN</span>
+    </button>
+    <button class="nav-ctrl-btn" id="themeToggle" aria-label="切换明暗模式">
+      <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+  <button class="nav-burger" id="navBurger" aria-label="打开菜单" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mm-inner">
+    <a href="#map" class="mm-link" onclick="closeMM()" data-i18n="nav.map">地图</a>
+    <a href="#books" class="mm-link" onclick="closeMM()" data-i18n="nav.books">作品</a>
+    <a href="#about" class="mm-link" onclick="closeMM()" data-i18n="nav.about">关于</a>
+    <a href="#translations" class="mm-link" onclick="closeMM()" data-i18n="nav.translations">译作</a>
+    <a href="#timeline" class="mm-link" onclick="closeMM()" data-i18n="nav.timeline">年表</a>
+  </div>
+</div>
+
+<!-- ======= MAP HERO (FULL SCREEN) ======= -->
+<section class="map-hero" id="map">
+
+  <!-- Overlay: identity -->
+  <div class="map-header">
+    <div class="map-identity">
+      <div class="map-id-label" data-i18n="hero.label">Travel Writer · 旅行作家</div>
+      <h1 class="map-id-name">Liu Zichao</h1>
+      <div class="map-id-cn">刘 子 超</div>
+      <p class="map-id-tagline" data-i18n="hero.tagline">去见识风景和人间，去见证希望和苦难，为了明白——世界上还有人在这样生活</p>
+    </div>
+    <div class="map-nav">
+      <button class="map-nav-btn active" onclick="showJ('all')" data-i18n="map.all">全部旅程</button>
+      <button class="map-nav-btn" onclick="showJ(0)"><span class="map-nav-dot" style="background:var(--europe)"></span><span data-i18n="map.j0">中欧 · 2014</span></button>
+      <button class="map-nav-btn" onclick="showJ(1)"><span class="map-nav-dot" style="background:var(--asia)"></span><span data-i18n="map.j1">中亚 · 2016–19</span></button>
+      <button class="map-nav-btn" onclick="showJ(2)"><span class="map-nav-dot" style="background:var(--monsoon)"></span><span data-i18n="map.j2">季风亚洲 · 2022</span></button>
+      <button class="map-nav-btn" onclick="showJ(3)"><span class="map-nav-dot" style="background:var(--balkan)"></span><span data-i18n="map.j3">巴尔干 · 2024</span></button>
+    </div>
+  </div>
+
+  <!-- The Map -->
+  <div class="map-canvas">
+    <svg class="map-svg" viewBox="0 0 960 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="刘子超旅行路线世界地图：四段旅程横跨中欧、中亚、季风亚洲和巴尔干">
+      <g id="land" opacity=".08" fill="#f5f0e8">
+        <path d="M350 70 L380 62 L410 58 L440 55 L465 58 L485 65 L500 78 L510 92 L505 108 L495 118 L480 125 L465 130 L450 136 L438 142 L425 150 L415 160 L410 170 L415 180 L422 188 L395 200 L380 195 L365 185 L352 172 L345 158 L342 142 L348 125 L358 108 L365 92 L360 78 Z"/>
+        <path d="M380 195 L400 200 L418 210 L430 225 L438 245 L442 268 L440 292 L432 315 L420 335 L405 352 L390 365 L375 370 L360 362 L350 348 L345 330 L342 308 L340 285 L342 260 L348 240 L358 222 L368 208 Z"/>
+        <path d="M505 108 L530 100 L558 95 L588 92 L618 90 L648 95 L678 102 L705 112 L725 125 L738 140 L742 158 L735 175 L722 188 L705 198 L685 205 L665 208 L645 205 L625 198 L608 188 L592 175 L578 162 L565 148 L555 135 L542 122 L520 112 Z"/>
+        <path d="M738 85 L760 80 L782 82 L800 88 L815 98 L825 112 L828 128 L822 145 L812 158 L798 168 L782 172 L765 170 L750 165 L738 155 L732 142 L730 128 L732 112 L735 98 Z"/>
+        <path d="M625 198 L640 208 L652 220 L660 235 L665 252 L662 270 L655 285 L645 298 L632 308 L618 312 L605 308 L595 298 L588 285 L585 268 L588 250 L595 235 L605 222 L615 210 Z"/>
+        <path d="M660 235 L675 240 L690 250 L700 265 L705 282 L702 300 L695 315 L682 325 L668 328 L655 322 L648 310 L645 295 L650 278 L655 262 L658 248 Z"/>
+        <path d="M690 310 L710 308 L728 312 L742 320 L752 332 L755 348 L748 362 L738 372 L722 378 L708 375 L698 365 L692 352 L688 338 L688 322 Z"/>
+        <path d="M775 340 L800 335 L825 338 L848 348 L865 362 L872 380 L870 398 L862 412 L845 422 L825 428 L805 425 L790 415 L778 400 L772 382 L770 365 L772 350 Z"/>
+        <path d="M130 80 L155 72 L178 68 L200 72 L218 82 L228 98 L232 118 L225 138 L215 155 L200 170 L185 182 L170 190 L155 195 L140 192 L128 182 L120 168 L115 150 L112 130 L115 110 L120 95 Z"/>
+        <path d="M165 200 L182 205 L198 215 L210 232 L218 252 L222 275 L218 300 L210 322 L198 342 L185 358 L170 368 L158 365 L148 352 L142 335 L138 312 L138 290 L142 268 L148 248 L155 230 L160 215 Z"/>
+        <path d="M500 170 L520 175 L535 185 L542 200 L538 215 L528 228 L515 235 L500 232 L490 222 L485 208 L488 192 L495 180 Z"/>
+      </g>
+      <g opacity=".04" stroke="#f5f0e8" stroke-width=".3" fill="none">
+        <line x1="0" y1="100" x2="960" y2="100"/><line x1="0" y1="200" x2="960" y2="200"/><line x1="0" y1="300" x2="960" y2="300"/><line x1="0" y1="400" x2="960" y2="400"/>
+        <line x1="160" y1="0" x2="160" y2="520"/><line x1="320" y1="0" x2="320" y2="520"/><line x1="480" y1="0" x2="480" y2="520"/><line x1="640" y1="0" x2="640" y2="520"/><line x1="800" y1="0" x2="800" y2="520"/>
+      </g>
+      <g opacity=".06" font-size="8" fill="#f5f0e8"><text x="8" y="103">40°N</text><text x="8" y="203">20°N</text><text x="8" y="303">0°</text><text x="320" y="14">0°</text><text x="480" y="14">40°E</text><text x="640" y="14">80°E</text><text x="800" y="14">120°E</text></g>
+      <g id="bj"><circle class="bj-ring" cx="790" cy="118" r="5" fill="none" stroke="#c45a3c" stroke-width="1"/><circle cx="790" cy="118" r="3" fill="#c45a3c" opacity=".9"/><text x="790" y="106" text-anchor="middle" font-size="10" fill="#c45a3c" opacity=".7" font-weight="600">北京 Beijing</text></g>
+
+      <g id="j0" class="journey-group" onclick="showJ(0)">
+        <path class="route-path" d="M790 118 C 700 105, 600 95, 462 92" fill="none" stroke="var(--europe)" stroke-width="1" opacity=".25" stroke-dasharray="4,4"/>
+        <path class="route-path" d="M462 92 C 458 95, 455 100, 468 102 C 478 104, 475 110, 465 115 C 455 120, 448 118, 440 122 C 430 128, 425 132, 422 140" fill="none" stroke="var(--europe)" stroke-width="2" opacity=".7"/>
+        <g class="city-dot" data-city="berlin"><circle cx="462" cy="92" r="4" fill="var(--europe)" opacity=".9"/><text x="462" y="84" text-anchor="middle" font-size="10" fill="var(--europe)">Berlin</text></g>
+        <g class="city-dot" data-city="dresden"><circle cx="470" cy="99" r="2.5" fill="var(--europe)" opacity=".5"/><text x="484" y="99" font-size="8" fill="var(--europe)" opacity=".6">Dresden</text></g>
+        <g class="city-dot" data-city="praha"><circle cx="465" cy="115" r="3" fill="var(--europe)" opacity=".7"/><text x="465" y="128" text-anchor="middle" font-size="9" fill="var(--europe)">Praha</text></g>
+        <g class="city-dot" data-city="budapest"><circle cx="440" cy="122" r="3" fill="var(--europe)" opacity=".7"/><text x="426" y="118" text-anchor="end" font-size="9" fill="var(--europe)">Budapest</text></g>
+        <g class="city-dot" data-city="trieste"><circle cx="422" cy="140" r="3" fill="var(--europe)" opacity=".7"/><text x="408" y="150" text-anchor="end" font-size="9" fill="var(--europe)">Trieste</text></g>
+      </g>
+      <g id="j1" class="journey-group" onclick="showJ(1)">
+        <path class="route-path" d="M790 118 C 750 112, 710 108, 670 105 C 640 103, 620 108, 600 115 C 585 120, 575 128, 582 138 C 590 145, 605 142, 618 148 C 628 152, 622 160, 615 168" fill="none" stroke="var(--asia)" stroke-width="2" opacity=".7"/>
+        <g class="city-dot" data-city="almaty"><circle cx="670" cy="105" r="3.5" fill="var(--asia)" opacity=".8"/><text x="670" y="97" text-anchor="middle" font-size="10" fill="var(--asia)">Almaty</text></g>
+        <g class="city-dot" data-city="bishkek"><circle cx="648" cy="106" r="2.5" fill="var(--asia)" opacity=".5"/><text x="648" y="98" text-anchor="middle" font-size="8" fill="var(--asia)" opacity=".6">Bishkek</text></g>
+        <g class="city-dot" data-city="tashkent"><circle cx="625" cy="110" r="2.5" fill="var(--asia)" opacity=".5"/><text x="625" y="102" text-anchor="middle" font-size="8" fill="var(--asia)" opacity=".6">Tashkent</text></g>
+        <g class="city-dot" data-city="samarkand"><circle cx="600" cy="115" r="3.5" fill="var(--asia)" opacity=".8"/><text x="586" y="112" text-anchor="end" font-size="10" fill="var(--asia)">Samarkand</text></g>
+        <g class="city-dot" data-city="dushanbe"><circle cx="618" cy="148" r="2.5" fill="var(--asia)" opacity=".6"/><text x="632" y="152" font-size="8" fill="var(--asia)" opacity=".6">Dushanbe</text></g>
+        <g class="city-dot" data-city="pamir"><circle cx="615" cy="168" r="2.5" fill="var(--asia)" opacity=".6"/><text x="628" y="172" font-size="8" fill="var(--asia)">Pamir</text></g>
+        <g class="city-dot" data-city="aralsea"><circle cx="582" cy="130" r="2" fill="var(--asia)" opacity=".4"/><text x="568" y="140" text-anchor="end" font-size="8" fill="var(--asia)" opacity=".5">Aral Sea</text></g>
+      </g>
+      <g id="j2" class="journey-group" onclick="showJ(2)">
+        <path class="route-path" d="M790 118 C 768 145, 738 175, 715 200 C 698 220, 682 228, 672 240 C 662 252, 658 262, 668 272 C 678 280, 692 278, 702 285 C 712 292, 718 305, 722 318" fill="none" stroke="var(--monsoon)" stroke-width="2" opacity=".7"/>
+        <g class="city-dot" data-city="india"><circle cx="715" cy="200" r="3.5" fill="var(--monsoon)" opacity=".8"/><text x="701" y="197" text-anchor="end" font-size="10" fill="var(--monsoon)">India</text></g>
+        <g class="city-dot" data-city="myanmar"><circle cx="672" cy="240" r="3" fill="var(--monsoon)" opacity=".7"/><text x="658" y="237" text-anchor="end" font-size="10" fill="var(--monsoon)">Myanmar</text></g>
+        <g class="city-dot" data-city="thailand"><circle cx="692" cy="278" r="3" fill="var(--monsoon)" opacity=".7"/><text x="678" y="275" text-anchor="end" font-size="9" fill="var(--monsoon)">Thailand</text></g>
+        <g class="city-dot" data-city="cambodia"><circle cx="702" cy="285" r="2" fill="var(--monsoon)" opacity=".4"/><text x="716" y="290" font-size="8" fill="var(--monsoon)" opacity=".6">Cambodia</text></g>
+        <g class="city-dot" data-city="indonesia"><circle cx="722" cy="318" r="3" fill="var(--monsoon)" opacity=".7"/><text x="736" y="322" font-size="9" fill="var(--monsoon)">Indonesia</text></g>
+      </g>
+      <g id="j3" class="journey-group" onclick="showJ(3)">
+        <path class="route-path" d="M438 125 C 436 132, 435 140, 440 148 C 445 155, 450 160, 452 168 C 454 176, 450 182, 448 190 C 446 198, 450 205, 452 212 C 454 220, 448 228, 442 235" fill="none" stroke="var(--balkan)" stroke-width="2" opacity=".7"/>
+        <g class="city-dot" data-city="slovenia"><circle cx="438" cy="125" r="3" fill="var(--balkan)" opacity=".7"/><text x="424" y="122" text-anchor="end" font-size="9" fill="var(--balkan)">Slovenia</text></g>
+        <g class="city-dot" data-city="croatia"><circle cx="442" cy="148" r="2.5" fill="var(--balkan)" opacity=".6"/><text x="456" y="148" font-size="8" fill="var(--balkan)">Croatia</text></g>
+        <g class="city-dot" data-city="bosnia"><circle cx="452" cy="168" r="2.5" fill="var(--balkan)" opacity=".6"/><text x="466" y="168" font-size="8" fill="var(--balkan)">Bosnia</text></g>
+        <g class="city-dot" data-city="serbia"><circle cx="448" cy="190" r="2.5" fill="var(--balkan)" opacity=".6"/><text x="462" y="190" font-size="8" fill="var(--balkan)">Serbia</text></g>
+        <g class="city-dot"><circle cx="452" cy="212" r="2" fill="var(--balkan)" opacity=".5"/><text x="466" y="212" font-size="7" fill="var(--balkan)" opacity=".6">Kosovo</text></g>
+        <g class="city-dot"><circle cx="448" cy="225" r="2" fill="var(--balkan)" opacity=".4"/><text x="462" y="226" font-size="7" fill="var(--balkan)" opacity=".5">N. Macedonia</text></g>
+        <g class="city-dot"><circle cx="442" cy="235" r="3" fill="var(--balkan)" opacity=".7"/><text x="426" y="245" text-anchor="end" font-size="9" fill="var(--balkan)">Albania</text></g>
+      </g>
+      <g transform="translate(920,480)" opacity=".1"><circle cx="0" cy="0" r="18" fill="none" stroke="#f5f0e8" stroke-width=".3"/><line x1="0" y1="-18" x2="0" y2="18" stroke="#f5f0e8" stroke-width=".3"/><line x1="-18" y1="0" x2="18" y2="0" stroke="#f5f0e8" stroke-width=".3"/><polygon points="0,-16 -2.5,-8 2.5,-8" fill="#f5f0e8" opacity=".4"/><text x="0" y="-22" text-anchor="middle" font-size="7" fill="#f5f0e8">N</text></g>
+      <text x="480" y="510" text-anchor="middle" font-size="8" fill="#f5f0e8" opacity=".05" letter-spacing=".5em">THE WANDERER'S MAP</text>
+    </svg>
+  </div>
+
+  <!-- Bottom overlay -->
+  <div class="map-bottom">
+    <div class="map-info-card" id="mic">
+      <div class="mic-year" id="micY"></div>
+      <div class="mic-book" id="micB"></div>
+      <div class="mic-en" id="micE"></div>
+      <div class="mic-desc" id="micD"></div>
+      <div class="mic-cities" id="micC"></div>
+      <a href="#books" class="mic-link" data-i18n="map.readmore">阅读更多 →</a>
+    </div>
+    <div class="map-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--europe)"></div>中欧</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--asia)"></div>中亚</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--monsoon)"></div>季风亚洲</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--balkan)"></div>巴尔干</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>北京</div>
+    </div>
+  </div>
+
+  <!-- Mobile journey cards (replaces SVG map on small screens) -->
+  <div class="mobile-journeys" id="mobileJ">
+    <div class="mj-cards" id="mjCards">
+      <div class="mj-card" data-idx="0" style="border-color:var(--europe)">
+        <div class="mj-color" style="background:var(--europe)"></div>
+        <div class="mj-year">2014</div>
+        <h3 class="mj-title">午夜降临前抵达</h3>
+        <p class="mj-en">Before Midnight</p>
+        <p class="mj-sub">中欧漫游</p>
+        <div class="mj-cities">
+          <span class="mj-city" data-city="berlin">Berlin 柏林</span>
+          <span class="mj-city" data-city="dresden">Dresden 德累斯顿</span>
+          <span class="mj-city" data-city="praha">Praha 布拉格</span>
+          <span class="mj-city" data-city="budapest">Budapest 布达佩斯</span>
+          <span class="mj-city" data-city="trieste">Trieste 的里雅斯特</span>
+        </div>
+      </div>
+      <div class="mj-card" data-idx="1" style="border-color:var(--asia)">
+        <div class="mj-color" style="background:var(--asia)"></div>
+        <div class="mj-year">2016–2019</div>
+        <h3 class="mj-title">失落的卫星</h3>
+        <p class="mj-en">Among the Stans</p>
+        <p class="mj-sub">深入中亚大陆的旅程</p>
+        <div class="mj-cities">
+          <span class="mj-city" data-city="almaty">Almaty 阿拉木图</span>
+          <span class="mj-city" data-city="bishkek">Bishkek 比什凯克</span>
+          <span class="mj-city" data-city="tashkent">Tashkent 塔什干</span>
+          <span class="mj-city" data-city="samarkand">Samarkand 撒马尔罕</span>
+          <span class="mj-city" data-city="dushanbe">Dushanbe 杜尚别</span>
+          <span class="mj-city" data-city="pamir">Pamir 帕米尔</span>
+          <span class="mj-city" data-city="aralsea">Aral Sea 咸海</span>
+        </div>
+      </div>
+      <div class="mj-card" data-idx="2" style="border-color:var(--monsoon)">
+        <div class="mj-color" style="background:var(--monsoon)"></div>
+        <div class="mj-year">2022</div>
+        <h3 class="mj-title">沿着季风的方向</h3>
+        <p class="mj-en">Chasing the Monsoon</p>
+        <p class="mj-sub">热带漫游</p>
+        <div class="mj-cities">
+          <span class="mj-city" data-city="india">India 印度</span>
+          <span class="mj-city" data-city="myanmar">Myanmar 缅甸</span>
+          <span class="mj-city" data-city="thailand">Thailand 泰国</span>
+          <span class="mj-city" data-city="cambodia">Cambodia 柬埔寨</span>
+          <span class="mj-city" data-city="indonesia">Indonesia 印尼</span>
+        </div>
+      </div>
+      <div class="mj-card" data-idx="3" style="border-color:var(--balkan)">
+        <div class="mj-color" style="background:var(--balkan)"></div>
+        <div class="mj-year">2024</div>
+        <h3 class="mj-title">血与蜜之地</h3>
+        <p class="mj-en">Land of Blood and Honey</p>
+        <p class="mj-sub">穿越巴尔干的旅程</p>
+        <div class="mj-cities">
+          <span class="mj-city" data-city="slovenia">Slovenia 斯洛文尼亚</span>
+          <span class="mj-city" data-city="croatia">Croatia 克罗地亚</span>
+          <span class="mj-city" data-city="bosnia">Bosnia 波斯尼亚</span>
+          <span class="mj-city" data-city="serbia">Serbia 塞尔维亚</span>
+        </div>
+      </div>
+    </div>
+    <div class="mj-dots" id="mjDots">
+      <button class="mj-dot active" data-i="0" style="background:var(--europe)" aria-label="中欧旅程"></button>
+      <button class="mj-dot" data-i="1" style="background:var(--asia);opacity:.4" aria-label="中亚旅程"></button>
+      <button class="mj-dot" data-i="2" style="background:var(--monsoon);opacity:.4" aria-label="季风亚洲旅程"></button>
+      <button class="mj-dot" data-i="3" style="background:var(--balkan);opacity:.4" aria-label="巴尔干旅程"></button>
+    </div>
+  </div>
+
+  <div class="map-scroll-hint" id="scrollHint">
+    <span>Explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ======= CONTENT ======= -->
+<div class="content">
+
+<section class="sec about" id="about">
+  <div class="sec-inner">
+    <div class="about-grid">
+      <div class="about-portrait rv"><div class="about-portrait-inner" style="padding:2rem;background:var(--dark3)"><svg viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;opacity:.6">
+        <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--europe)" stop-opacity=".3"/><stop offset="33%" stop-color="var(--asia)" stop-opacity=".2"/><stop offset="66%" stop-color="var(--monsoon)" stop-opacity=".2"/><stop offset="100%" stop-color="var(--balkan)" stop-opacity=".3"/></linearGradient></defs>
+        <rect width="200" height="280" fill="url(#pg)" opacity=".15"/>
+        <g fill="none" stroke-width="1.5" opacity=".5">
+          <path d="M40 240 C60 200,80 180,100 160 C120 140,110 120,90 100 C70 80,80 60,100 50" stroke="var(--europe)"/>
+          <path d="M100 50 C130 60,140 80,130 100 C120 120,140 140,160 130" stroke="var(--asia)"/>
+          <path d="M100 160 C120 180,140 200,150 220 C155 230,160 240,155 250" stroke="var(--monsoon)"/>
+          <path d="M90 100 C85 120,80 140,85 155 C90 165,95 175,90 190" stroke="var(--balkan)"/>
+        </g>
+        <circle cx="40" cy="240" r="3" fill="var(--accent)" opacity=".7"/>
+        <text x="100" y="30" text-anchor="middle" font-family="'EB Garamond',serif" font-size="9" fill="var(--ink20)" letter-spacing=".15em">THE WANDERER</text>
+        <text x="100" y="270" text-anchor="middle" font-family="'Noto Serif SC',serif" font-size="11" fill="var(--ink20)" letter-spacing=".3em">漫游者</text>
+      </svg></div></div>
+      <div>
+        <div class="sec-label rv" data-i18n="about.label">About the Writer</div>
+        <h2 class="sec-title rv rv1" data-i18n="about.title">一个去旅行的作家</h2>
+        <div class="about-text rv rv2" data-i18n-html="about.text">
+          <p><span class="hl">刘子超</span>，1984年生于北京。毕业于北京大学中文系。曾任职于《南方人物周刊》《GQ智族》等媒体。2016年辞职成为自由撰稿人，开始全职旅行与写作。</p>
+          <p>他区分两种旅行写作者——写东西的旅行者（a traveler who writes）和去旅行的作家（a writer who travels）。他属于后者。足迹遍布中欧、中亚、东南亚、巴尔干，以冷静而富有洞察力的笔触，书写被世界遗忘的角落里的人与故事。</p>
+          <p>2015–2016年任牛津大学访问学者。作品被译为多种语言，获得国际文学界的广泛关注。</p>
+        </div>
+        <div class="about-tags rv rv3">
+          <div class="about-tag">北京大学中文系</div><div class="about-tag">牛津大学访问学者</div><div class="about-tag">中德媒体使者</div><div class="about-tag">全球真实故事奖</div><div class="about-tag">单向街年度青年作家</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec books" id="books">
+  <div class="sec-inner">
+    <div class="sec-label rv" data-i18n="books.label">Works</div>
+    <h2 class="sec-title rv rv1" data-i18n="books.title">作品</h2>
+    <div class="books-grid rv rv2">
+      <div class="book-card" data-idx="0">
+        <div class="book-card-cover"><div class="bcc-num">01</div><div class="bcc-title">午夜降临前<br>抵达</div><div class="bcc-line"></div><div class="bcc-sub">中欧漫游</div></div>
+        <div class="book-card-info"><div class="bci-head"><h3>午夜降临前抵达</h3><span class="bci-en">Before Midnight</span></div><div class="bci-meta"><span>2014 初版 / 2020 再版</span><span>新经典文化</span></div><p class="bci-desc">首部旅行文学作品。深入欧洲中部，从柏林到布拉格，从布达佩斯到的里雅斯特，在短暂的夏季与漫长的冬夜中，展开一次逃脱与寻找的漫游。</p><div class="bci-awards"><span class="bci-award">书店文学奖 · 最佳旅行写作</span></div><a href="book-01-before-midnight.html" class="bci-more">阅读更多 →</a></div>
+      </div>
+      <div class="book-card" data-idx="1">
+        <div class="book-card-cover"><div class="bcc-num">02</div><div class="bcc-title">失落的卫星</div><div class="bcc-line"></div><div class="bcc-sub">深入中亚大陆的旅程</div></div>
+        <div class="book-card-info"><div class="bci-head"><h3>失落的卫星</h3><span class="bci-en">Among the Stans</span></div><div class="bci-meta"><span>2020</span><span>文汇出版社</span><span>416页</span></div><p class="bci-desc">九年间六次深入中亚腹地，穿越五个"斯坦"国家。在全球化的边缘与大国的夹缝间，一位孤独的旅人，替我们拜访陌生的邻居。</p><div class="bci-awards"><span class="bci-award">全球真实故事奖</span><span class="bci-award">单向街 · 年度青年作家</span><span class="bci-award">收获文学榜</span></div><a href="book-02-lost-satellite.html" class="bci-more">阅读更多 →</a></div>
+      </div>
+      <div class="book-card" data-idx="2">
+        <div class="book-card-cover"><div class="bcc-num">03</div><div class="bcc-title">沿着季风<br>的方向</div><div class="bcc-line"></div><div class="bcc-sub">热带漫游</div></div>
+        <div class="book-card-info"><div class="bci-head"><h3>沿着季风的方向</h3><span class="bci-en">Chasing the Monsoon</span></div><div class="bci-meta"><span>2022</span><span>新经典文化</span></div><p class="bci-desc">从恒河河畔到缅北金三角，从泰柬边境到印尼火山。一场感官全开的热带漫游，书写海风版的南洋故事。</p><div class="bci-awards"><span class="bci-award">南都年度好书</span></div><a href="book-03-monsoon.html" class="bci-more">阅读更多 →</a></div>
+      </div>
+      <div class="book-card" data-idx="3">
+        <div class="book-card-cover"><div class="bcc-num">04</div><div class="bcc-title">血与蜜之地</div><div class="bcc-line"></div><div class="bcc-sub">穿越巴尔干的旅程</div></div>
+        <div class="book-card-info"><div class="bci-head"><h3>血与蜜之地</h3><span class="bci-en">Land of Blood and Honey</span></div><div class="bci-meta"><span>2024</span><span>新经典文化</span><span>8国 · 23城</span></div><p class="bci-desc">从北到南，由冬入春，穿越巴尔干半岛。在东西文明的交汇地带，见证世界的细碎与广阔。</p><div class="bci-awards"><span class="bci-award">收获文学榜 · 长篇非虚构</span><span class="bci-award">春风悦读榜 · 年度新知</span><span class="bci-award">年度人文榜十大好书</span></div><a href="book-04-balkans.html" class="bci-more">阅读更多 →</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="voices">
+  <div class="voices-inner">
+    <div class="voice rv"><div class="voice-text">"这一代人中最杰出的游记作家"</div><div class="voice-src">—— 许知远</div></div>
+    <div class="voice-div"></div>
+    <div class="voice rv rv1"><div class="voice-text">"为今后的旅行写作树立起标杆"</div><div class="voice-src">—— 罗新，历史学家</div></div>
+    <div class="voice-div"></div>
+    <div class="voice rv rv2"><div class="voice-text" style="font-size:clamp(0.9rem,2vw,1.2rem);opacity:.6">"一部少见、非凡的文学作品"</div><div class="voice-src">—— 玛格丽特·斯普雷彻，True Story Award 评委会主席</div></div>
+  </div>
+</section>
+
+<section class="sec translations" id="translations">
+  <div class="sec-inner">
+    <div class="sec-label rv" data-i18n="trans.label">Translations</div>
+    <h2 class="sec-title rv rv1" data-i18n="trans.title">译作</h2>
+    <div class="trans-grid rv rv2">
+      <div class="trans-card"><h4>流动的盛宴</h4><div class="tc-en">A Moveable Feast</div><div class="tc-author">Ernest Hemingway · 海明威</div></div>
+      <div class="trans-card"><h4>惊异之城</h4><div class="tc-en">Thrilling Cities</div><div class="tc-author">Ian Fleming · 伊恩·弗莱明</div></div>
+      <div class="trans-card"><h4>漫长的告别</h4><div class="tc-en">The Long Goodbye</div><div class="tc-author">Raymond Chandler · 雷蒙德·钱德勒</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec timeline" id="timeline">
+  <div class="sec-inner">
+    <div class="sec-label rv" data-i18n="timeline.label">Chronicle</div>
+    <h2 class="sec-title rv rv1" data-i18n="timeline.title">旅途年表</h2>
+    <div class="tl-list rv rv2">
+      <div class="tl-item"><div class="tl-yr">1984</div><div class="tl-tx">生于北京</div></div>
+      <div class="tl-item"><div class="tl-yr">2007</div><div class="tl-tx">北京大学中文系毕业，进入《南方人物周刊》</div></div>
+      <div class="tl-item"><div class="tl-yr">2010</div><div class="tl-tx">获刘丽安诗歌奖。于新疆霍尔果斯口岸眺望天山，萌生中亚旅行之念</div></div>
+      <div class="tl-item"><div class="tl-yr">2012</div><div class="tl-tx">获中德媒体使者称号</div></div>
+      <div class="tl-item"><div class="tl-yr">2014</div><div class="tl-tx">出版《午夜降临前抵达》。获"蚂蜂窝"年度旅行家</div></div>
+      <div class="tl-item"><div class="tl-yr">2015–16</div><div class="tl-tx">牛津大学访问学者。获书店文学奖最佳旅行写作</div></div>
+      <div class="tl-item"><div class="tl-yr">2016</div><div class="tl-tx">辞职，开始全职旅行与写作</div></div>
+      <div class="tl-item"><div class="tl-yr">2019</div><div class="tl-tx">中亚作品获"全球真实故事奖"特别关注</div></div>
+      <div class="tl-item"><div class="tl-yr">2020</div><div class="tl-tx">出版《失落的卫星》，入围收获文学榜</div></div>
+      <div class="tl-item"><div class="tl-yr">2021</div><div class="tl-tx">获单向街书店文学奖·年度青年作家</div></div>
+      <div class="tl-item"><div class="tl-yr">2022</div><div class="tl-tx">出版《沿着季风的方向》</div></div>
+      <div class="tl-item"><div class="tl-yr">2024</div><div class="tl-tx">出版《血与蜜之地》，入选多项年度榜单</div></div>
+      <div class="tl-item"><div class="tl-yr">2025</div><div class="tl-tx">签约花城文学院。获微博年度旅行作家</div></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <div class="ft-name">Liu Zichao</div>
+  <div class="ft-cn">刘 子 超</div>
+  <div class="ft-line"></div>
+  <p class="ft-quote" data-i18n-html="footer.quote">旅行带来的那种自由感和探索感，<br>是别的东西很难代替的。</p>
+  <div class="ft-social">
+    <a href="https://weibo.com/u/1633135450" class="ft-social-link" target="_blank" rel="noopener" aria-label="微博" title="微博">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.1 18.3c-3.4.4-6.3-1.2-6.5-3.5-.2-2.3 2.4-4.5 5.8-4.9 3.4-.4 6.3 1.2 6.5 3.5.2 2.3-2.4 4.5-5.8 4.9zm6.6-8.1c-.3-.1-.5-.2-.4-.5.3-.7.3-1.3.1-1.7-.5-.8-1.8-.8-3.3-.1 0 0-.5.2-.3-.2.2-.8.2-1.5-.2-1.9-.8-.8-3 .1-4.9 2-1.4 1.4-2.2 3-2.2 4.3 0 2.5 3.2 4 6.3 4 4.1 0 6.8-2.4 6.8-4.3 0-1.1-.8-1.8-1.9-2.1zM20 5.3c-1.2-1.4-3-2-4.7-1.7-.4.1-.6.4-.5.8.1.4.4.6.8.5 1.2-.2 2.5.2 3.4 1.2.9 1 1.2 2.4.8 3.6-.1.4.1.7.5.8h.2c.3 0 .6-.2.7-.5.5-1.7.1-3.5-1.2-4.7zm-2.2 1.9c-.6-.7-1.5-1-2.4-.8-.3.1-.5.3-.4.6.1.3.3.5.6.4.5-.1 1 .1 1.3.5.3.4.4.9.3 1.4-.1.3.1.6.4.7h.1c.3 0 .5-.2.5-.4.2-.8 0-1.7-.4-2.4z"/></svg>
+    </a>
+    <a href="https://www.douban.com/personage/30092115/" class="ft-social-link" target="_blank" rel="noopener" aria-label="豆瓣" title="豆瓣">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16v2H4V3zm0 16h16v2H4v-2zm2-3h12l1.5 3h-2l-1-2H7.5l-1 2h-2L6 16zm1-2h10v-2H7v2zm0-4h10V8H7v2z"/></svg>
+    </a>
+    <a href="mailto:contact@liuzichao.com" class="ft-social-link" aria-label="邮箱" title="邮箱">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+    </a>
+  </div>
+  <div class="ft-copy">© 2026 · A Writer Who Travels</div>
+</footer>
+
+<!-- City Photo Lightbox -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-backdrop" onclick="closeLB()"></div>
+  <div class="lb-content">
+    <button class="lb-close" onclick="closeLB()" aria-label="关闭">×</button>
+    <div class="lb-header">
+      <div class="lb-city" id="lbCity"></div>
+      <div class="lb-book" id="lbBook"></div>
+    </div>
+    <div class="lb-photos" id="lbPhotos"></div>
+    <div class="lb-hint" data-i18n="lb.hint">照片占位 — 可替换为书中实际旅途摄影</div>
+  </div>
+</div>
+
+<script>
+// ===== I18N TRANSLATIONS =====
+const I18N={
+  zh:{
+    'nav.about':'关于','nav.books':'作品','nav.translations':'译作','nav.timeline':'年表','nav.map':'地图',
+    'hero.label':'Travel Writer · 旅行作家',
+    'hero.tagline':'去见识风景和人间，去见证希望和苦难，为了明白——世界上还有人在这样生活',
+    'map.all':'全部旅程','map.j0':'中欧 · 2014','map.j1':'中亚 · 2016–19','map.j2':'季风亚洲 · 2022','map.j3':'巴尔干 · 2024',
+    'map.readmore':'阅读更多 →',
+    'about.label':'About the Writer','about.title':'一个去旅行的作家',
+    'about.text':'<p><span class="hl">刘子超</span>，1984年生于北京。毕业于北京大学中文系。曾任职于《南方人物周刊》《GQ智族》等媒体。2016年辞职成为自由撰稿人，开始全职旅行与写作。</p><p>他区分两种旅行写作者——写东西的旅行者（a traveler who writes）和去旅行的作家（a writer who travels）。他属于后者。足迹遍布中欧、中亚、东南亚、巴尔干，以冷静而富有洞察力的笔触，书写被世界遗忘的角落里的人与故事。</p><p>2015–2016年任牛津大学访问学者。作品被译为多种语言，获得国际文学界的广泛关注。</p>',
+    'books.label':'Works','books.title':'作品',
+    'book0.title':'午夜降临前抵达','book0.desc':'首部旅行文学作品。深入欧洲中部，从柏林到布拉格，从布达佩斯到的里雅斯特，在短暂的夏季与漫长的冬夜中，展开一次逃脱与寻找的漫游。','book0.more':'阅读更多 →',
+    'book1.title':'失落的卫星','book1.desc':'九年间六次深入中亚腹地，穿越五个"斯坦"国家。在全球化的边缘与大国的夹缝间，一位孤独的旅人，替我们拜访陌生的邻居。','book1.more':'阅读更多 →',
+    'book2.title':'沿着季风的方向','book2.desc':'从恒河河畔到缅北金三角，从泰柬边境到印尼火山。一场感官全开的热带漫游，书写海风版的南洋故事。','book2.more':'阅读更多 →',
+    'book3.title':'血与蜜之地','book3.desc':'从北到南，由冬入春，穿越巴尔干半岛。在东西文明的交汇地带，见证世界的细碎与广阔。','book3.more':'阅读更多 →',
+    'voice0':'"这一代人中最杰出的游记作家"','voice0.src':'—— 许知远',
+    'voice1':'"为今后的旅行写作树立起标杆"','voice1.src':'—— 罗新，历史学家',
+    'voice2':'"一部少见、非凡的文学作品"','voice2.src':'—— 玛格丽特·斯普雷彻，True Story Award 评委会主席',
+    'trans.label':'Translations','trans.title':'译作',
+    'timeline.label':'Chronicle','timeline.title':'旅途年表',
+    'tl.0':'生于北京','tl.1':'北京大学中文系毕业，进入《南方人物周刊》','tl.2':'获刘丽安诗歌奖。于新疆霍尔果斯口岸眺望天山，萌生中亚旅行之念',
+    'tl.3':'获中德媒体使者称号','tl.4':'出版《午夜降临前抵达》。获"蚂蜂窝"年度旅行家','tl.5':'牛津大学访问学者。获书店文学奖最佳旅行写作',
+    'tl.6':'辞职，开始全职旅行与写作','tl.7':'中亚作品获"全球真实故事奖"特别关注','tl.8':'出版《失落的卫星》，入围收获文学榜',
+    'tl.9':'获单向街书店文学奖·年度青年作家','tl.10':'出版《沿着季风的方向》','tl.11':'出版《血与蜜之地》，入选多项年度榜单','tl.12':'签约花城文学院。获微博年度旅行作家',
+    'footer.quote':'旅行带来的那种自由感和探索感，<br>是别的东西很难代替的。',
+    'lb.hint':'照片占位 — 可替换为书中实际旅途摄影',
+  },
+  en:{
+    'nav.about':'About','nav.books':'Works','nav.translations':'Translations','nav.timeline':'Chronicle','nav.map':'Map',
+    'hero.label':'Travel Writer · 旅行作家',
+    'hero.tagline':'To witness landscapes and humanity, to bear witness to hope and suffering, to understand — that people somewhere are living this way',
+    'map.all':'All Journeys','map.j0':'Central Europe · 2014','map.j1':'Central Asia · 2016–19','map.j2':'Monsoon Asia · 2022','map.j3':'Balkans · 2024',
+    'map.readmore':'Read More →',
+    'about.label':'About the Writer','about.title':'A Writer Who Travels',
+    'about.text':'<p><span class="hl">Liu Zichao</span>, born 1984 in Beijing. Graduated from Peking University, Department of Chinese Language and Literature. Previously worked at Southern People Weekly and GQ China. In 2016, he left his job to become a full-time travel writer.</p><p>He distinguishes two kinds of travel writers — a traveler who writes, and a writer who travels. He belongs to the latter. His footsteps span Central Europe, Central Asia, Southeast Asia, and the Balkans, writing about the people and stories in the forgotten corners of the world with calm, perceptive prose.</p><p>Visiting Scholar at Oxford University, 2015–2016. His works have been translated into multiple languages and received wide international attention.</p>',
+    'books.label':'Works','books.title':'Works',
+    'book0.title':'Before Midnight','book0.desc':'His debut travel writing. Deep into the heart of Central Europe, from Berlin to Prague, from Budapest to Trieste — a wandering of escape and discovery through brief summers and long winter nights.','book0.more':'Read More →',
+    'book1.title':'Among the Stans','book1.desc':'Over nine years and six journeys into the heartland of Central Asia, crossing five "Stan" countries. A lone traveler visiting our unknown neighbors at the edges of globalization.','book1.more':'Read More →',
+    'book2.title':'Chasing the Monsoon','book2.desc':'From the banks of the Ganges to the Golden Triangle of northern Myanmar, from the Thai-Cambodian border to Indonesian volcanoes. A sensory journey through the tropics.','book2.more':'Read More →',
+    'book3.title':'Land of Blood and Honey','book3.desc':'From north to south, winter to spring, crossing eight countries and twenty-three cities in the Balkans. Witnessing the fractures and vastness at the crossroads of civilizations.','book3.more':'Read More →',
+    'voice0':'"The most remarkable travel writer of his generation"','voice0.src':'— Xu Zhiyuan',
+    'voice1':'"Setting the benchmark for travel writing to come"','voice1.src':'— Luo Xin, Historian',
+    'voice2':'"A rare, extraordinary work of literature"','voice2.src':'— Margrit Sprecher, Chair of True Story Award',
+    'trans.label':'Translations','trans.title':'Translations',
+    'timeline.label':'Chronicle','timeline.title':'Chronicle',
+    'tl.0':'Born in Beijing','tl.1':'Graduated from Peking University; joined Southern People Weekly','tl.2':'Awarded Liu Li\'an Poetry Prize. Gazed at Tianshan from Khorgos border, conceived the idea of Central Asian travel',
+    'tl.3':'Named Sino-German Media Ambassador','tl.4':'Published Before Midnight. Named Mafengwo Traveler of the Year','tl.5':'Visiting Scholar at Oxford. Won Bookstore Literary Award for Best Travel Writing',
+    'tl.6':'Resigned to travel and write full-time','tl.7':'Central Asia work received True Story Award special mention','tl.8':'Published Among the Stans, shortlisted for Harvest Literary List',
+    'tl.9':'Won One-Way Street Bookstore Literary Award · Young Writer of the Year','tl.10':'Published Chasing the Monsoon','tl.11':'Published Land of Blood and Honey, selected for multiple annual lists','tl.12':'Signed with Huacheng Literary Academy. Named Weibo Travel Writer of the Year',
+    'footer.quote':'The sense of freedom and exploration that travel brings<br>is hard to replace with anything else.',
+    'lb.hint':'Photo placeholders — to be replaced with actual travel photography',
+  }
+};
+
+let _lang=localStorage.getItem('lzc-lang')||'zh';
+
+function setLang(lang){
+  _lang=lang;
+  localStorage.setItem('lzc-lang',lang);
+  document.documentElement.lang=lang==='zh'?'zh-CN':'en';
+  document.getElementById('langLabel').textContent=lang==='zh'?'EN':'中';
+  const t=I18N[lang];
+  // data-i18n: textContent
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(t[k]!=null)el.textContent=t[k];
+  });
+  // data-i18n-html: innerHTML
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+    const k=el.getAttribute('data-i18n-html');
+    if(t[k]!=null)el.innerHTML=t[k];
+  });
+  // Book cards (special: have nested elements)
+  document.querySelectorAll('.book-card').forEach((card,i)=>{
+    const h3=card.querySelector('.bci-head h3');
+    const desc=card.querySelector('.bci-desc');
+    const more=card.querySelector('.bci-more');
+    if(h3&&t['book'+i+'.title'])h3.textContent=t['book'+i+'.title'];
+    if(desc&&t['book'+i+'.desc'])desc.textContent=t['book'+i+'.desc'];
+    if(more&&t['book'+i+'.more'])more.textContent=t['book'+i+'.more'];
+  });
+  // Voices
+  document.querySelectorAll('.voice').forEach((v,i)=>{
+    const txt=v.querySelector('.voice-text');
+    const src=v.querySelector('.voice-src');
+    if(txt&&t['voice'+i])txt.textContent=t['voice'+i];
+    if(src&&t['voice'+i+'.src'])src.textContent=t['voice'+i+'.src'];
+  });
+  // Timeline
+  document.querySelectorAll('.tl-item').forEach((item,i)=>{
+    const tx=item.querySelector('.tl-tx');
+    if(tx&&t['tl.'+i])tx.textContent=t['tl.'+i];
+  });
+}
+
+// ===== THEME =====
+function setTheme(theme){
+  document.documentElement.setAttribute('data-theme',theme);
+  localStorage.setItem('lzc-theme',theme);
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  setTheme(cur==='light'?'dark':'dark'===cur?'light':'light');
+}
+
+// Init theme + lang from localStorage
+(function(){
+  const savedTheme=localStorage.getItem('lzc-theme');
+  if(savedTheme)setTheme(savedTheme);
+  if(_lang!=='zh')setLang(_lang);
+})();
+
+// Nav
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('scrolled',window.scrollY>80);
+  const sh=document.getElementById('scrollHint');
+  if(sh)sh.classList.toggle('hidden',window.scrollY>200);
+});
+
+// Reveal
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis')})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+
+// Route draw
+setTimeout(()=>{document.querySelectorAll('.route-path').forEach(p=>p.classList.add('animate'))},800);
+
+// Journey data
+const JD=[
+  {y:'2014',b:'午夜降临前抵达',e:'Before Midnight',c:'var(--europe)',d:'从柏林到的里雅斯特，穿越中欧腹地。在短暂的夏季与漫长的冬夜中，展开一次逃脱与寻找的漫游。',ci:'Berlin · Dresden · Auschwitz · Praha · Budapest · Trieste'},
+  {y:'2016–2019',b:'失落的卫星',e:'Among the Stans',c:'var(--asia)',d:'九年间六次深入中亚五国，穿越人迹罕至的高原山谷，追寻咸海萎缩的湖岸线。一位孤独的旅人，替我们拜访陌生的邻居。',ci:'Almaty · Bishkek · Tashkent · Samarkand · Dushanbe · Pamir'},
+  {y:'2022',b:'沿着季风的方向',e:'Chasing the Monsoon',c:'var(--monsoon)',d:'前往季风吹拂的国度，从恒河河畔到缅北金三角，从泰柬边境到印尼火山，感官全开的热带漫游。',ci:'India · Myanmar · Thailand · Cambodia · Indonesia'},
+  {y:'2024',b:'血与蜜之地',e:'Land of Blood and Honey',c:'var(--balkan)',d:'从北到南，由冬入春，穿越巴尔干半岛八国二十三城，在东西文明的交汇地带见证撕裂与重建。',ci:'Slovenia · Croatia · Bosnia · Serbia · Kosovo · Albania'}
+];
+function showJ(idx){
+  document.querySelectorAll('.map-nav-btn').forEach((b,i)=>{b.classList.toggle('active',idx==='all'?i===0:i===idx+1)});
+  document.querySelectorAll('.journey-group').forEach((g,i)=>{g.style.opacity=idx==='all'?'1':i===idx?'1':'0.04'});
+  const p=document.getElementById('mic');
+  if(idx==='all'){p.classList.remove('show')}else{
+    const j=JD[idx];
+    document.getElementById('micY').textContent=j.y;document.getElementById('micY').style.color=j.c;
+    document.getElementById('micB').textContent=j.b;document.getElementById('micE').textContent=j.e;
+    document.getElementById('micD').textContent=j.d;document.getElementById('micC').textContent=j.ci;
+    p.classList.add('show');
+  }
+}
+
+// Book cards hover
+document.querySelectorAll('.book-card').forEach(c=>{
+  c.addEventListener('mouseenter',()=>{showJ(+c.dataset.idx)});
+  c.addEventListener('mouseleave',()=>{showJ('all')});
+});
+
+// ===== CITY PHOTO DATA =====
+const cityPhotos={
+  berlin:{city:'Berlin 柏林',book:'《午夜降临前抵达》',color:'#4a7c9b',photos:[
+    {cap:'柏林街头游行，他从人群中脱身',desc:'离开柏林那天，下着小雨，天空阴沉得像一块陈旧的大理石',hue:210},
+    {cap:'勃兰登堡门前的黄昏',desc:'冷战的阴影仍在城市的肌理中隐现',hue:220},
+  ]},
+  dresden:{city:'Dresden 德累斯顿',book:'《午夜降临前抵达》',color:'#4a7c9b',photos:[
+    {cap:'战后重建的圣母教堂',desc:'废墟上生长出来的巴洛克',hue:200},
+  ]},
+  praha:{city:'Praha 布拉格',book:'《午夜降临前抵达》',color:'#4a7c9b',photos:[
+    {cap:'卡夫卡成为商品的街头',desc:'在布拉格的地下逃逸现实',hue:215},
+    {cap:'查理大桥上的雾气',desc:'伏尔塔瓦河的水声穿过石拱',hue:205},
+  ]},
+  budapest:{city:'Budapest 布达佩斯',book:'《午夜降临前抵达》',color:'#4a7c9b',photos:[
+    {cap:'大饭店的床榻上入梦',desc:'在多瑙河旁的街头醒来',hue:225},
+    {cap:'匈牙利大平原的公路',desc:'被雨水困在昨日的咖啡馆中',hue:195},
+  ]},
+  trieste:{city:'Trieste 的里雅斯特',book:'《午夜降临前抵达》',color:'#4a7c9b',photos:[
+    {cap:'亚得里亚海岸的尽头',desc:'一夜之间撞见世界的巨变',hue:190},
+  ]},
+  almaty:{city:'Almaty 阿拉木图',book:'《失落的卫星》',color:'#b8963e',photos:[
+    {cap:'苹果城的绿色集市',desc:'司机师傅将前往苹果城——阿拉木图',hue:45},
+    {cap:'天山北麓的积雪',desc:'天空终止于白雪覆盖的天山之巅',hue:35},
+  ]},
+  bishkek:{city:'Bishkek 比什凯克',book:'《失落的卫星》',color:'#b8963e',photos:[
+    {cap:'伊塞克湖畔的小镇',desc:'败落的旅游小镇乔尔蓬阿塔',hue:50},
+  ]},
+  tashkent:{city:'Tashkent 塔什干',book:'《失落的卫星》',color:'#b8963e',photos:[
+    {cap:'苏联时代的地铁站',desc:'时钟指针停止在30年前的某一刻',hue:40},
+  ]},
+  samarkand:{city:'Samarkand 撒马尔罕',book:'《失落的卫星》',color:'#b8963e',photos:[
+    {cap:'雷吉斯坦广场的蓝色穹顶',desc:'踏上撒马尔罕的金色之路',hue:42},
+    {cap:'古丝绸之路的驿站',desc:'徜徉于血腥战场和帝国宫殿',hue:38},
+  ]},
+  dushanbe:{city:'Dushanbe 杜尚别',book:'《失落的卫星》',color:'#b8963e',photos:[
+    {cap:'想要学中文的塔吉克男孩',desc:'他对我说：我被困住了，哥',hue:48},
+  ]},
+  pamir:{city:'Pamir 帕米尔',book:'《失落的卫星》',color:'#b8963e',photos:[
+    {cap:'帕米尔公路无人区',desc:'在帕米尔无人区抛锚',hue:30},
+    {cap:'高原上的牧民帐篷',desc:'世界屋脊上的沉默',hue:33},
+  ]},
+  aralsea:{city:'Aral Sea 咸海',book:'《失落的卫星》',color:'#b8963e',photos:[
+    {cap:'萎缩的咸海湖岸线',desc:'困守咸海七年的中国商人——咸海王',hue:55},
+  ]},
+  india:{city:'India 印度',book:'《沿着季风的方向》',color:'#5a8a5a',photos:[
+    {cap:'恒河河畔的朝圣者',desc:'在眼中含泪的朝圣者和火葬台上的黑雾中',hue:130},
+    {cap:'瓦拉纳西的清晨',desc:'体会印度人近乎本能的生命延续感',hue:125},
+  ]},
+  myanmar:{city:'Myanmar 缅甸',book:'《沿着季风的方向》',color:'#5a8a5a',photos:[
+    {cap:'缅北金三角的中文学校',desc:'说话文雅的华侨后人，艰难维系一所中文学校',hue:140},
+  ]},
+  thailand:{city:'Thailand 泰国',book:'《沿着季风的方向》',color:'#5a8a5a',photos:[
+    {cap:'泰柬边境被地雷包围的古寺',desc:'揭开一段隐秘的伤痛记忆',hue:120},
+  ]},
+  cambodia:{city:'Cambodia 柬埔寨',book:'《沿着季风的方向》',color:'#5a8a5a',photos:[
+    {cap:'吴哥窟的黄昏',desc:'文明的丧失和苦难的诞生',hue:135},
+  ]},
+  indonesia:{city:'Indonesia 印尼',book:'《沿着季风的方向》',color:'#5a8a5a',photos:[
+    {cap:'伊真火山口的硫黄工人',desc:'炼狱中谋生的硫黄工人向他伸出援手',hue:145},
+    {cap:'爪哇的田野',desc:'人的存在才是爪哇的灵魂',hue:115},
+  ]},
+  slovenia:{city:'Slovenia 斯洛文尼亚',book:'《血与蜜之地》',color:'#9e3a6e',photos:[
+    {cap:'卢布尔雅那的河畔',desc:'由冬入春的第一站',hue:310},
+  ]},
+  croatia:{city:'Croatia 克罗地亚',book:'《血与蜜之地》',color:'#9e3a6e',photos:[
+    {cap:'亚得里亚海的石墙城',desc:'在东西文明的交汇地带',hue:320},
+  ]},
+  bosnia:{city:'Bosnia 波斯尼亚',book:'《血与蜜之地》',color:'#9e3a6e',photos:[
+    {cap:'萨拉热窝的弹孔墙',desc:'欧洲火药桶的战争记忆',hue:300},
+    {cap:'莫斯塔尔古桥',desc:'撕裂与重建的隐喻',hue:315},
+  ]},
+  serbia:{city:'Serbia 塞尔维亚',book:'《血与蜜之地》',color:'#9e3a6e',photos:[
+    {cap:'贝尔格莱德的夜',desc:'世界的细碎与广阔',hue:305},
+  ]},
+};
+
+// Procedural city visual generator — unique per city
+function makePlaceholder(hue,w,h,cityKey){
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  const ctx=c.getContext('2d');
+  const isLight=document.documentElement.getAttribute('data-theme')==='light';
+  // Seed from city key for deterministic uniqueness
+  let seed=0;
+  if(cityKey)for(let i=0;i<cityKey.length;i++)seed=((seed<<5)-seed)+cityKey.charCodeAt(i);
+  seed=Math.abs(seed);
+  const rng=()=>{seed=(seed*16807+0)%2147483647;return seed/2147483647};
+
+  // Gradient background — adapt to theme
+  const angle=rng()*Math.PI*2;
+  const g=ctx.createLinearGradient(w/2+Math.cos(angle)*w/2,0,w/2-Math.cos(angle)*w/2,h);
+  if(isLight){
+    g.addColorStop(0,`hsl(${hue},12%,85%)`);
+    g.addColorStop(1,`hsl(${hue+15},15%,78%)`);
+  }else{
+    g.addColorStop(0,`hsl(${hue},15%,12%)`);
+    g.addColorStop(1,`hsl(${hue+15},18%,18%)`);
+  }
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+
+  // Topographic contour lines — unique per city
+  const numLines=4+Math.floor(rng()*4);
+  const lineLum=isLight?55:30;
+  const lineAlpha=isLight?0.2:0.12;
+  for(let l=0;l<numLines;l++){
+    const baseY=h*0.2+rng()*h*0.6;
+    const freq=0.008+rng()*0.015;
+    const amp=15+rng()*30;
+    const phase=rng()*Math.PI*2;
+    ctx.strokeStyle=`hsla(${hue},25%,${lineLum+rng()*15}%,${lineAlpha+rng()*0.15})`;
+    ctx.lineWidth=0.5+rng()*0.5;
+    ctx.beginPath();
+    for(let x=0;x<w;x+=2){
+      const y=baseY+Math.sin(x*freq+phase)*amp+Math.sin(x*freq*2.3+phase*1.7)*amp*0.3;
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+
+  // Grid dots pattern — like a map coordinate grid
+  const gridSize=30+Math.floor(rng()*20);
+  const offsetX=rng()*gridSize;
+  const offsetY=rng()*gridSize;
+  const dotLum=isLight?50:40;
+  const dotAlpha=isLight?0.1:0.05;
+  for(let gx=offsetX;gx<w;gx+=gridSize){
+    for(let gy=offsetY;gy<h;gy+=gridSize){
+      if(rng()>0.6){
+        ctx.fillStyle=`hsla(${hue},10%,${dotLum}%,${dotAlpha+rng()*0.08})`;
+        ctx.fillRect(gx,gy,1,1);
+      }
+    }
+  }
+
+  // Route-like curved path through the frame
+  ctx.strokeStyle=`hsla(${hue},30%,${isLight?35:45}%,${isLight?0.35:0.2})`;
+  ctx.lineWidth=1;ctx.setLineDash([4,6]);
+  ctx.beginPath();
+  const pts=[];
+  for(let i=0;i<4;i++)pts.push({x:rng()*w,y:rng()*h});
+  ctx.moveTo(pts[0].x,pts[0].y);
+  ctx.bezierCurveTo(pts[1].x,pts[1].y,pts[2].x,pts[2].y,pts[3].x,pts[3].y);
+  ctx.stroke();ctx.setLineDash([]);
+
+  // Small dot at route endpoint
+  ctx.fillStyle=`hsla(${hue},40%,${isLight?40:50}%,${isLight?0.5:0.3})`;
+  ctx.beginPath();ctx.arc(pts[3].x,pts[3].y,3,0,Math.PI*2);ctx.fill();
+
+  // Vignette
+  const vg=ctx.createRadialGradient(w/2,h/2,w*0.15,w/2,h/2,w*0.7);
+  vg.addColorStop(0,'transparent');
+  vg.addColorStop(1,isLight?'rgba(220,210,195,0.4)':'rgba(10,9,7,0.5)');
+  ctx.fillStyle=vg;ctx.fillRect(0,0,w,h);
+
+  return c.toDataURL();
+}
+
+// Lightbox with focus management
+let _lbTrigger=null;
+function openLB(cityKey){
+  const data=cityPhotos[cityKey];if(!data)return;
+  _lbTrigger=document.activeElement;
+  document.getElementById('lbCity').textContent=data.city;
+  document.getElementById('lbCity').style.color=data.color;
+  document.getElementById('lbBook').textContent=data.book;
+  document.getElementById('lbBook').style.color=data.color;
+  const container=document.getElementById('lbPhotos');
+  container.innerHTML='';
+  data.photos.forEach(p=>{
+    const img=makePlaceholder(p.hue,600,400,cityKey);
+    container.innerHTML+=`<div class="lb-photo"><div class="lb-photo-img"><img src="${img}" style="width:100%;height:100%;object-fit:cover;display:block" alt="${p.cap}"></div><div class="lb-photo-caption">${p.cap}<em>— ${p.desc}</em></div></div>`;
+  });
+  const lb=document.getElementById('lightbox');
+  lb.classList.add('open');
+  lb.setAttribute('role','dialog');
+  lb.setAttribute('aria-modal','true');
+  lb.setAttribute('aria-label',data.city);
+  document.body.style.overflow='hidden';
+  // Focus the close button
+  setTimeout(()=>{lb.querySelector('.lb-close').focus()},100);
+}
+function closeLB(){
+  const lb=document.getElementById('lightbox');
+  lb.classList.remove('open');
+  document.body.style.overflow='';
+  // Restore focus
+  if(_lbTrigger&&_lbTrigger.focus)_lbTrigger.focus();
+  _lbTrigger=null;
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeLB();
+  // Focus trap inside lightbox
+  const lb=document.getElementById('lightbox');
+  if(!lb.classList.contains('open')||e.key!=='Tab')return;
+  const focusable=lb.querySelectorAll('button,a,[tabindex]');
+  if(!focusable.length)return;
+  const first=focusable[0],last=focusable[focusable.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+});
+
+// Attach click + keyboard to city dots
+document.querySelectorAll('.city-dot[data-city]').forEach(dot=>{
+  dot.setAttribute('role','button');
+  dot.setAttribute('tabindex','0');
+  const label=dot.querySelector('text');
+  if(label)dot.setAttribute('aria-label',label.textContent);
+  dot.addEventListener('click',e=>{
+    e.stopPropagation();
+    openLB(dot.dataset.city);
+  });
+  dot.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();openLB(dot.dataset.city)}
+  });
+});
+
+// Auto-play first journey after route animation
+setTimeout(()=>{showJ(0)},3500);
+
+// Hamburger menu
+function toggleMM(){
+  const b=document.getElementById('navBurger');
+  const m=document.getElementById('mobileMenu');
+  const isOpen=m.classList.toggle('open');
+  b.classList.toggle('open',isOpen);
+  b.setAttribute('aria-expanded',isOpen);
+  document.body.style.overflow=isOpen?'hidden':'';
+}
+function closeMM(){
+  const b=document.getElementById('navBurger');
+  const m=document.getElementById('mobileMenu');
+  m.classList.remove('open');b.classList.remove('open');
+  b.setAttribute('aria-expanded','false');
+  document.body.style.overflow='';
+}
+document.getElementById('navBurger').addEventListener('click',toggleMM);
+
+// Theme toggle
+document.getElementById('themeToggle').addEventListener('click',toggleTheme);
+
+// Language toggle
+document.getElementById('langToggle').addEventListener('click',()=>{
+  setLang(_lang==='zh'?'en':'zh');
+});
+
+// Mobile journey cards
+const mjCards=document.getElementById('mjCards');
+const mjDots=document.querySelectorAll('.mj-dot');
+if(mjCards){
+  // Scroll snap handles the swipe; update dots on scroll
+  mjCards.addEventListener('scroll',()=>{
+    const idx=Math.round(mjCards.scrollLeft/mjCards.offsetWidth);
+    mjDots.forEach((d,i)=>{d.classList.toggle('active',i===idx)});
+  });
+  // Dot click scrolls to card
+  mjDots.forEach(d=>{
+    d.addEventListener('click',()=>{
+      const i=+d.dataset.i;
+      mjCards.scrollTo({left:i*mjCards.offsetWidth,behavior:'smooth'});
+    });
+  });
+  // City taps open lightbox
+  document.querySelectorAll('.mj-city[data-city]').forEach(c=>{
+    c.addEventListener('click',()=>openLB(c.dataset.city));
+  });
+}
+</script>
+</body>
+</html>
