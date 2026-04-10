@@ -35,10 +35,42 @@
 }
 html{scroll-behavior:smooth;font-size:16px}
 body{background:var(--dark);color:var(--ink);font-family:'Noto Serif SC',serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ===== INTRO (pretext landing) ===== */
+#intro{position:relative;width:100vw;height:100vh;overflow:hidden;background:#0a0908;z-index:300;transition:opacity .8s,transform .8s}
+#intro.dismissed{opacity:0;transform:translateY(-40px);pointer-events:none}
+#intro .intro-stage{position:relative;width:100%;height:100%;overflow:hidden}
+#intro .map-bg{position:absolute;inset:0;pointer-events:none;z-index:0;display:flex;align-items:center;justify-content:center}
+#intro .map-bg svg,#intro .map-lens svg{width:100%;height:100%;max-width:none}
+#intro .map-lens{position:absolute;inset:0;pointer-events:none;z-index:8;display:flex;align-items:center;justify-content:center;clip-path:circle(0px at 0px 0px);transition:clip-path 0s}
+#intro .intro-line{position:absolute;white-space:pre;z-index:1;color:rgba(232,228,220,.7);user-select:text;-webkit-user-select:text}
+#intro .intro-headline{position:absolute;white-space:pre;font-weight:700;color:rgba(255,255,255,.9);z-index:2;letter-spacing:-.5px;user-select:text;-webkit-user-select:text}
+#intro .intro-dropcap{position:absolute;pointer-events:none;z-index:2;font-weight:700;color:#c45a3c}
+#intro .intro-lens-ring{position:absolute;border-radius:50%;pointer-events:none;z-index:9;will-change:transform;border:1px solid rgba(245,240,232,.15);box-shadow:0 0 60px 20px rgba(196,90,60,.06),0 0 30px 8px rgba(196,90,60,.04),inset 0 0 40px 15px rgba(10,9,8,.4);background:transparent}
+#intro .intro-lens-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;border:1px solid rgba(245,240,232,.06)}
+#intro .intro-lens-ring::after{content:'';position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.04),transparent 50%)}
+#intro .intro-lens-cross{position:absolute;inset:0;pointer-events:none;opacity:.1}
+#intro .intro-lens-cross::before,#intro .intro-lens-cross::after{content:'';position:absolute;background:rgba(245,240,232,.5)}
+#intro .intro-lens-cross::before{width:1px;height:100%;left:50%;top:0}
+#intro .intro-lens-cross::after{height:1px;width:100%;top:50%;left:0}
+#intro .intro-pq-box{position:absolute;pointer-events:none;z-index:3;border-left:2px solid rgba(196,90,60,.4)}
+#intro .intro-pq-line{position:absolute;white-space:pre;font-style:italic;color:rgba(196,163,90,.65);letter-spacing:.04em;user-select:text;-webkit-user-select:text}
+#intro .intro-hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font:400 11px/1 'EB Garamond',serif;color:rgba(255,255,255,.15);z-index:100;letter-spacing:.2em;text-transform:uppercase;pointer-events:none;white-space:nowrap}
+#intro .intro-enter{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);z-index:100;cursor:pointer;text-align:center;animation:intro-pulse 2s ease-in-out infinite}
+#intro .intro-enter-text{font:400 12px/1 'EB Garamond',serif;color:rgba(245,240,232,.35);letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px}
+#intro .intro-enter-arrow{width:20px;height:20px;margin:0 auto;border-right:1px solid rgba(245,240,232,.3);border-bottom:1px solid rgba(245,240,232,.3);transform:rotate(45deg)}
+@keyframes intro-pulse{0%,100%{opacity:.4}50%{opacity:1}}
+#intro .intro-nav{position:absolute;top:0;left:0;right:0;z-index:100;padding:20px 32px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+#intro .intro-nav-logo{font-family:'Playfair Display',serif;font-size:12px;font-weight:700;color:rgba(245,240,232,.35);letter-spacing:.08em}
+#intro .intro-nav-links{display:flex;gap:24px}
+#intro .intro-nav-links a{font-family:'EB Garamond',serif;font-size:11px;color:rgba(245,240,232,.2);text-decoration:none;letter-spacing:.15em;pointer-events:auto;transition:color .3s;text-transform:uppercase}
+#intro .intro-nav-links a:hover{color:rgba(196,90,60,.7)}
+@media(max-width:760px){#intro .intro-hint{display:none}#intro .intro-nav-links{display:none}}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:var(--noise-opacity);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
 /* ===== NAV ===== */
 nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;gap:2rem;transition:all 0.4s}
+#intro:not(.dismissed)~nav{opacity:0;pointer-events:none}
 nav.scrolled{background:var(--nav-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--ink10)}
 .nav-logo{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--ink);text-decoration:none;opacity:.8;transition:opacity .3s;white-space:nowrap;flex-shrink:0}
 .nav-logo:hover{opacity:1}
@@ -95,9 +127,15 @@ nav.scrolled{background:var(--nav-bg);backdrop-filter:blur(12px);border-bottom:1
 .city-dot{cursor:pointer}
 .city-dot circle{transition:all 0.3s}
 .city-dot:hover circle{r:5;opacity:1}
-@keyframes draw{from{stroke-dashoffset:2000}to{stroke-dashoffset:0}}
-.route-path{stroke-dasharray:2000;stroke-dashoffset:2000}
-.route-path.animate{animation:draw 3s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes draw-dashed{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.route-path{stroke-dasharray:1;stroke-dashoffset:1}
+.route-path.animate{animation:draw 2.5s cubic-bezier(0.25,0.1,0.25,1) forwards}
+.route-path.route-dashed{stroke-dasharray:0.02 0.015}
+.route-path.route-dashed.animate{animation:draw-dashed 2s cubic-bezier(0.25,0.1,0.25,1) forwards}
+.journey-group .city-dot{opacity:0;transition:opacity 1s ease}
+.journey-group.revealed .city-dot{opacity:1}
+body.scroll-locked{overflow:hidden!important}
 @keyframes bj-pulse{0%,100%{opacity:.4;r:5}50%{opacity:0;r:10}}
 .bj-ring{animation:bj-pulse 3s ease-in-out infinite}
 
@@ -356,6 +394,19 @@ footer{background:var(--dark);border-top:1px solid var(--ink05);padding:4rem 3re
 </head>
 <body>
 
+<!-- ======= INTRO (pretext landing) ======= -->
+<section id="intro">
+  <div class="intro-stage" id="introStage">
+    <div class="map-bg" id="introMapBg"></div>
+    <div class="map-lens" id="introMapLens"></div>
+  </div>
+  <div class="intro-hint">Move cursor to explore the map</div>
+  <div class="intro-enter" onclick="dismissIntro()">
+    <div class="intro-enter-text">Enter</div>
+    <div class="intro-enter-arrow"></div>
+  </div>
+</section>
+
 <nav id="nav">
   <a href="#map" class="nav-logo">LZC</a>
   <ul class="nav-links">
@@ -431,8 +482,8 @@ footer{background:var(--dark);border-top:1px solid var(--ink05);padding:4rem 3re
       <g id="bj"><circle class="bj-ring" cx="790" cy="118" r="5" fill="none" stroke="#c45a3c" stroke-width="1"/><circle cx="790" cy="118" r="3" fill="#c45a3c" opacity=".9"/><text x="790" y="106" text-anchor="middle" font-size="10" fill="#c45a3c" opacity=".7" font-weight="600">北京 Beijing</text></g>
 
       <g id="j0" class="journey-group" onclick="showJ(0)">
-        <path class="route-path" d="M790 118 C 700 105, 600 95, 462 92" fill="none" stroke="var(--europe)" stroke-width="1" opacity=".25" stroke-dasharray="4,4"/>
-        <path class="route-path" d="M462 92 C 458 95, 455 100, 468 102 C 478 104, 475 110, 465 115 C 455 120, 448 118, 440 122 C 430 128, 425 132, 422 140" fill="none" stroke="var(--europe)" stroke-width="2" opacity=".7"/>
+        <path class="route-path route-dashed" d="M790 118 C 700 105, 600 95, 462 92" fill="none" stroke="var(--europe)" stroke-width="1" opacity=".25" pathLength="1"/>
+        <path class="route-path" d="M462 92 C 458 95, 455 100, 468 102 C 478 104, 475 110, 465 115 C 455 120, 448 118, 440 122 C 430 128, 425 132, 422 140" fill="none" stroke="var(--europe)" stroke-width="2" opacity=".7" pathLength="1"/>
         <g class="city-dot" data-city="berlin"><circle cx="462" cy="92" r="4" fill="var(--europe)" opacity=".9"/><text x="462" y="84" text-anchor="middle" font-size="10" fill="var(--europe)">Berlin</text></g>
         <g class="city-dot" data-city="dresden"><circle cx="470" cy="99" r="2.5" fill="var(--europe)" opacity=".5"/><text x="484" y="99" font-size="8" fill="var(--europe)" opacity=".6">Dresden</text></g>
         <g class="city-dot" data-city="praha"><circle cx="465" cy="115" r="3" fill="var(--europe)" opacity=".7"/><text x="465" y="128" text-anchor="middle" font-size="9" fill="var(--europe)">Praha</text></g>
@@ -440,7 +491,7 @@ footer{background:var(--dark);border-top:1px solid var(--ink05);padding:4rem 3re
         <g class="city-dot" data-city="trieste"><circle cx="422" cy="140" r="3" fill="var(--europe)" opacity=".7"/><text x="408" y="150" text-anchor="end" font-size="9" fill="var(--europe)">Trieste</text></g>
       </g>
       <g id="j1" class="journey-group" onclick="showJ(1)">
-        <path class="route-path" d="M790 118 C 750 112, 710 108, 670 105 C 640 103, 620 108, 600 115 C 585 120, 575 128, 582 138 C 590 145, 605 142, 618 148 C 628 152, 622 160, 615 168" fill="none" stroke="var(--asia)" stroke-width="2" opacity=".7"/>
+        <path class="route-path" d="M790 118 C 750 112, 710 108, 670 105 C 640 103, 620 108, 600 115 C 585 120, 575 128, 582 138 C 590 145, 605 142, 618 148 C 628 152, 622 160, 615 168" fill="none" stroke="var(--asia)" stroke-width="2" opacity=".7" pathLength="1"/>
         <g class="city-dot" data-city="almaty"><circle cx="670" cy="105" r="3.5" fill="var(--asia)" opacity=".8"/><text x="670" y="97" text-anchor="middle" font-size="10" fill="var(--asia)">Almaty</text></g>
         <g class="city-dot" data-city="bishkek"><circle cx="648" cy="106" r="2.5" fill="var(--asia)" opacity=".5"/><text x="648" y="98" text-anchor="middle" font-size="8" fill="var(--asia)" opacity=".6">Bishkek</text></g>
         <g class="city-dot" data-city="tashkent"><circle cx="625" cy="110" r="2.5" fill="var(--asia)" opacity=".5"/><text x="625" y="102" text-anchor="middle" font-size="8" fill="var(--asia)" opacity=".6">Tashkent</text></g>
@@ -450,7 +501,7 @@ footer{background:var(--dark);border-top:1px solid var(--ink05);padding:4rem 3re
         <g class="city-dot" data-city="aralsea"><circle cx="582" cy="130" r="2" fill="var(--asia)" opacity=".4"/><text x="568" y="140" text-anchor="end" font-size="8" fill="var(--asia)" opacity=".5">Aral Sea</text></g>
       </g>
       <g id="j2" class="journey-group" onclick="showJ(2)">
-        <path class="route-path" d="M790 118 C 768 145, 738 175, 715 200 C 698 220, 682 228, 672 240 C 662 252, 658 262, 668 272 C 678 280, 692 278, 702 285 C 712 292, 718 305, 722 318" fill="none" stroke="var(--monsoon)" stroke-width="2" opacity=".7"/>
+        <path class="route-path" d="M790 118 C 768 145, 738 175, 715 200 C 698 220, 682 228, 672 240 C 662 252, 658 262, 668 272 C 678 280, 692 278, 702 285 C 712 292, 718 305, 722 318" fill="none" stroke="var(--monsoon)" stroke-width="2" opacity=".7" pathLength="1"/>
         <g class="city-dot" data-city="india"><circle cx="715" cy="200" r="3.5" fill="var(--monsoon)" opacity=".8"/><text x="701" y="197" text-anchor="end" font-size="10" fill="var(--monsoon)">India</text></g>
         <g class="city-dot" data-city="myanmar"><circle cx="672" cy="240" r="3" fill="var(--monsoon)" opacity=".7"/><text x="658" y="237" text-anchor="end" font-size="10" fill="var(--monsoon)">Myanmar</text></g>
         <g class="city-dot" data-city="thailand"><circle cx="692" cy="278" r="3" fill="var(--monsoon)" opacity=".7"/><text x="678" y="275" text-anchor="end" font-size="9" fill="var(--monsoon)">Thailand</text></g>
@@ -458,7 +509,7 @@ footer{background:var(--dark);border-top:1px solid var(--ink05);padding:4rem 3re
         <g class="city-dot" data-city="indonesia"><circle cx="722" cy="318" r="3" fill="var(--monsoon)" opacity=".7"/><text x="736" y="322" font-size="9" fill="var(--monsoon)">Indonesia</text></g>
       </g>
       <g id="j3" class="journey-group" onclick="showJ(3)">
-        <path class="route-path" d="M438 125 C 436 132, 435 140, 440 148 C 445 155, 450 160, 452 168 C 454 176, 450 182, 448 190 C 446 198, 450 205, 452 212 C 454 220, 448 228, 442 235" fill="none" stroke="var(--balkan)" stroke-width="2" opacity=".7"/>
+        <path class="route-path" d="M438 125 C 436 132, 435 140, 440 148 C 445 155, 450 160, 452 168 C 454 176, 450 182, 448 190 C 446 198, 450 205, 452 212 C 454 220, 448 228, 442 235" fill="none" stroke="var(--balkan)" stroke-width="2" opacity=".7" pathLength="1"/>
         <g class="city-dot" data-city="slovenia"><circle cx="438" cy="125" r="3" fill="var(--balkan)" opacity=".7"/><text x="424" y="122" text-anchor="end" font-size="9" fill="var(--balkan)">Slovenia</text></g>
         <g class="city-dot" data-city="croatia"><circle cx="442" cy="148" r="2.5" fill="var(--balkan)" opacity=".6"/><text x="456" y="148" font-size="8" fill="var(--balkan)">Croatia</text></g>
         <g class="city-dot" data-city="bosnia"><circle cx="452" cy="168" r="2.5" fill="var(--balkan)" opacity=".6"/><text x="466" y="168" font-size="8" fill="var(--balkan)">Bosnia</text></g>
@@ -830,8 +881,21 @@ window.addEventListener('scroll',()=>{
 const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis')})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
 
-// Route draw
-setTimeout(()=>{document.querySelectorAll('.route-path').forEach(p=>p.classList.add('animate'))},800);
+// Route draw — staggered, triggered after intro dismissed
+let _routesDrawn=false;
+function drawRoutesSequentially(){
+  if(_routesDrawn)return;
+  _routesDrawn=true;
+  const groups=[document.getElementById('j0'),document.getElementById('j1'),document.getElementById('j2'),document.getElementById('j3')];
+  groups.forEach((g,i)=>{
+    if(!g)return;
+    setTimeout(()=>{
+      g.querySelectorAll('.route-path').forEach(p=>p.classList.add('animate'));
+      // Reveal city dots partway through the route draw
+      setTimeout(()=>g.classList.add('revealed'),1500);
+    },i*800);
+  });
+}
 
 // Journey data
 const JD=[
@@ -1122,6 +1186,401 @@ if(mjCards){
   document.querySelectorAll('.mj-city[data-city]').forEach(c=>{
     c.addEventListener('click',()=>openLB(c.dataset.city));
   });
+}
+
+// Intro dismiss
+function dismissIntro(instant){
+  const intro=document.getElementById('intro');
+  if(!intro||intro.classList.contains('dismissed'))return;
+  sessionStorage.setItem('lzc-intro-seen','1');
+  if(instant){intro.style.display='none';intro.classList.add('dismissed');drawRoutesSequentially();return}
+  intro.classList.add('dismissed');
+  // Lock scroll so momentum doesn't carry past map
+  document.body.classList.add('scroll-locked');
+  window.scrollTo(0,0);
+  setTimeout(()=>{
+    intro.style.display='none';
+    window.scrollTo(0,0);
+    // Unlock scroll after a brief pause
+    setTimeout(()=>{document.body.classList.remove('scroll-locked')},400);
+  },800);
+  // Start drawing routes after intro fades out
+  setTimeout(()=>{drawRoutesSequentially()},600);
+}
+// Skip intro if already seen this session or navigating back from sub-page
+if(sessionStorage.getItem('lzc-intro-seen')||location.hash){dismissIntro(true)}
+// Scroll wheel on intro dismisses it
+document.getElementById('intro').addEventListener('wheel',function(e){
+  if(e.deltaY>0){e.preventDefault();dismissIntro()}
+},{passive:false});
+// Touch swipe up on intro
+let _introTY=0;
+document.getElementById('intro').addEventListener('touchstart',function(e){_introTY=e.touches[0].clientY},{passive:true});
+document.getElementById('intro').addEventListener('touchmove',function(e){
+  if(_introTY-e.touches[0].clientY>50){e.preventDefault();dismissIntro()}
+},{passive:false});
+</script>
+
+<!-- Intro pretext engine -->
+<script type="module">
+import {
+  prepareWithSegments,
+  layoutNextLine,
+  layoutWithLines,
+  walkLineRanges,
+} from './vendor/pretext/layout.js'
+
+const MAP_SVG=`<svg viewBox="0 0 960 520" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <g id="land" opacity="LAND_OPACITY" fill="#f5f0e8">
+    <path d="M350 70 L380 62 L410 58 L440 55 L465 58 L485 65 L500 78 L510 92 L505 108 L495 118 L480 125 L465 130 L450 136 L438 142 L425 150 L415 160 L410 170 L415 180 L422 188 L395 200 L380 195 L365 185 L352 172 L345 158 L342 142 L348 125 L358 108 L365 92 L360 78 Z"/>
+    <path d="M380 195 L400 200 L418 210 L430 225 L438 245 L442 268 L440 292 L432 315 L420 335 L405 352 L390 365 L375 370 L360 362 L350 348 L345 330 L342 308 L340 285 L342 260 L348 240 L358 222 L368 208 Z"/>
+    <path d="M505 108 L530 100 L558 95 L588 92 L618 90 L648 95 L678 102 L705 112 L725 125 L738 140 L742 158 L735 175 L722 188 L705 198 L685 205 L665 208 L645 205 L625 198 L608 188 L592 175 L578 162 L565 148 L555 135 L542 122 L520 112 Z"/>
+    <path d="M738 85 L760 80 L782 82 L800 88 L815 98 L825 112 L828 128 L822 145 L812 158 L798 168 L782 172 L765 170 L750 165 L738 155 L732 142 L730 128 L732 112 L735 98 Z"/>
+    <path d="M625 198 L640 208 L652 220 L660 235 L665 252 L662 270 L655 285 L645 298 L632 308 L618 312 L605 308 L595 298 L588 285 L585 268 L588 250 L595 235 L605 222 L615 210 Z"/>
+    <path d="M660 235 L675 240 L690 250 L700 265 L705 282 L702 300 L695 315 L682 325 L668 328 L655 322 L648 310 L645 295 L650 278 L655 262 L658 248 Z"/>
+    <path d="M690 310 L710 308 L728 312 L742 320 L752 332 L755 348 L748 362 L738 372 L722 378 L708 375 L698 365 L692 352 L688 338 L688 322 Z"/>
+    <path d="M775 340 L800 335 L825 338 L848 348 L865 362 L872 380 L870 398 L862 412 L845 422 L825 428 L805 425 L790 415 L778 400 L772 382 L770 365 L772 350 Z"/>
+    <path d="M130 80 L155 72 L178 68 L200 72 L218 82 L228 98 L232 118 L225 138 L215 155 L200 170 L185 182 L170 190 L155 195 L140 192 L128 182 L120 168 L115 150 L112 130 L115 110 L120 95 Z"/>
+    <path d="M165 200 L182 205 L198 215 L210 232 L218 252 L222 275 L218 300 L210 322 L198 342 L185 358 L170 368 L158 365 L148 352 L142 335 L138 312 L138 290 L142 268 L148 248 L155 230 L160 215 Z"/>
+    <path d="M500 170 L520 175 L535 185 L542 200 L538 215 L528 228 L515 235 L500 232 L490 222 L485 208 L488 192 L495 180 Z"/>
+  </g>
+  <g opacity="GRID_OPACITY" stroke="#f5f0e8" stroke-width=".3" fill="none">
+    <line x1="0" y1="100" x2="960" y2="100"/><line x1="0" y1="200" x2="960" y2="200"/><line x1="0" y1="300" x2="960" y2="300"/><line x1="0" y1="400" x2="960" y2="400"/>
+    <line x1="160" y1="0" x2="160" y2="520"/><line x1="320" y1="0" x2="320" y2="520"/><line x1="480" y1="0" x2="480" y2="520"/><line x1="640" y1="0" x2="640" y2="520"/><line x1="800" y1="0" x2="800" y2="520"/>
+  </g>
+  <g opacity="COORD_OPACITY" font-size="8" fill="#f5f0e8" font-family="EB Garamond,serif"><text x="8" y="103">40°N</text><text x="8" y="203">20°N</text><text x="8" y="303">0°</text><text x="320" y="14">0°</text><text x="480" y="14">40°E</text><text x="640" y="14">80°E</text><text x="800" y="14">120°E</text></g>
+  <circle cx="790" cy="118" r="5" fill="none" stroke="#c45a3c" stroke-width="1" opacity="ROUTE_OPACITY"/>
+  <circle cx="790" cy="118" r="3" fill="#c45a3c" opacity="ROUTE_OPACITY"/>
+  <text x="790" y="106" text-anchor="middle" font-size="10" fill="#c45a3c" opacity="ROUTE_OPACITY" font-weight="600" font-family="EB Garamond,serif">北京 Beijing</text>
+  <g>
+    <path d="M790 118 C 700 105, 600 95, 462 92" fill="none" stroke="#4a7c9b" stroke-width="1" opacity="ROUTE_HALF" stroke-dasharray="4,4"/>
+    <path d="M462 92 C 458 95, 455 100, 468 102 C 478 104, 475 110, 465 115 C 455 120, 448 118, 440 122 C 430 128, 425 132, 422 140" fill="none" stroke="#4a7c9b" stroke-width="2" opacity="ROUTE_OPACITY"/>
+    <circle cx="462" cy="92" r="4" fill="#4a7c9b" opacity="ROUTE_OPACITY"/><text x="462" y="84" text-anchor="middle" font-size="10" fill="#4a7c9b" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Berlin</text>
+    <circle cx="465" cy="115" r="3" fill="#4a7c9b" opacity="ROUTE_OPACITY"/><text x="465" y="128" text-anchor="middle" font-size="9" fill="#4a7c9b" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Praha</text>
+    <circle cx="440" cy="122" r="3" fill="#4a7c9b" opacity="ROUTE_OPACITY"/><text x="426" y="118" text-anchor="end" font-size="9" fill="#4a7c9b" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Budapest</text>
+    <circle cx="422" cy="140" r="3" fill="#4a7c9b" opacity="ROUTE_OPACITY"/><text x="408" y="150" text-anchor="end" font-size="9" fill="#4a7c9b" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Trieste</text>
+  </g>
+  <g>
+    <path d="M790 118 C 750 112, 710 108, 670 105 C 640 103, 620 108, 600 115 C 585 120, 575 128, 582 138 C 590 145, 605 142, 618 148 C 628 152, 622 160, 615 168" fill="none" stroke="#b8963e" stroke-width="2" opacity="ROUTE_OPACITY"/>
+    <circle cx="670" cy="105" r="3.5" fill="#b8963e" opacity="ROUTE_OPACITY"/><text x="670" y="97" text-anchor="middle" font-size="10" fill="#b8963e" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Almaty</text>
+    <circle cx="600" cy="115" r="3.5" fill="#b8963e" opacity="ROUTE_OPACITY"/><text x="586" y="112" text-anchor="end" font-size="10" fill="#b8963e" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Samarkand</text>
+    <circle cx="615" cy="168" r="2.5" fill="#b8963e" opacity="ROUTE_OPACITY"/><text x="628" y="172" font-size="8" fill="#b8963e" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Pamir</text>
+  </g>
+  <g>
+    <path d="M790 118 C 768 145, 738 175, 715 200 C 698 220, 682 228, 672 240 C 662 252, 658 262, 668 272 C 678 280, 692 278, 702 285 C 712 292, 718 305, 722 318" fill="none" stroke="#5a8a5a" stroke-width="2" opacity="ROUTE_OPACITY"/>
+    <circle cx="715" cy="200" r="3.5" fill="#5a8a5a" opacity="ROUTE_OPACITY"/><text x="701" y="197" text-anchor="end" font-size="10" fill="#5a8a5a" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">India</text>
+    <circle cx="672" cy="240" r="3" fill="#5a8a5a" opacity="ROUTE_OPACITY"/><text x="658" y="237" text-anchor="end" font-size="10" fill="#5a8a5a" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Myanmar</text>
+    <circle cx="722" cy="318" r="3" fill="#5a8a5a" opacity="ROUTE_OPACITY"/><text x="736" y="322" font-size="9" fill="#5a8a5a" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Indonesia</text>
+  </g>
+  <g>
+    <path d="M438 125 C 436 132, 435 140, 440 148 C 445 155, 450 160, 452 168 C 454 176, 450 182, 448 190 C 446 198, 450 205, 452 212 C 454 220, 448 228, 442 235" fill="none" stroke="#9e3a6e" stroke-width="2" opacity="ROUTE_OPACITY"/>
+    <circle cx="438" cy="125" r="3" fill="#9e3a6e" opacity="ROUTE_OPACITY"/><text x="424" y="122" text-anchor="end" font-size="9" fill="#9e3a6e" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Slovenia</text>
+    <circle cx="452" cy="168" r="2.5" fill="#9e3a6e" opacity="ROUTE_OPACITY"/><text x="466" y="168" font-size="8" fill="#9e3a6e" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Bosnia</text>
+    <circle cx="442" cy="235" r="3" fill="#9e3a6e" opacity="ROUTE_OPACITY"/><text x="426" y="245" text-anchor="end" font-size="9" fill="#9e3a6e" opacity="ROUTE_OPACITY" font-family="EB Garamond,serif">Albania</text>
+  </g>
+  <g transform="translate(920,480)" opacity="COMPASS_OPACITY"><circle cx="0" cy="0" r="18" fill="none" stroke="#f5f0e8" stroke-width=".3"/><line x1="0" y1="-18" x2="0" y2="18" stroke="#f5f0e8" stroke-width=".3"/><line x1="-18" y1="0" x2="18" y2="0" stroke="#f5f0e8" stroke-width=".3"/><polygon points="0,-16 -2.5,-8 2.5,-8" fill="#f5f0e8" opacity=".4"/><text x="0" y="-22" text-anchor="middle" font-size="7" fill="#f5f0e8" font-family="EB Garamond,serif">N</text></g>
+  <text x="480" y="510" text-anchor="middle" font-size="8" fill="#f5f0e8" opacity="WATERMARK_OPACITY" letter-spacing=".5em" font-family="EB Garamond,serif">THE WANDERER'S MAP</text>
+</svg>`;
+
+function _introMakeMap(o){
+  return MAP_SVG.replace(/LAND_OPACITY/g,o.land).replace(/GRID_OPACITY/g,o.grid).replace(/COORD_OPACITY/g,o.coord).replace(/ROUTE_OPACITY/g,o.route).replace(/ROUTE_HALF/g,o.routeHalf).replace(/COMPASS_OPACITY/g,o.compass).replace(/WATERMARK_OPACITY/g,o.watermark)
+}
+
+const introEl=document.getElementById('intro');
+if(introEl){
+  document.getElementById('introMapBg').innerHTML=_introMakeMap({land:'.04',grid:'.03',coord:'.04',route:'.06',routeHalf:'.03',compass:'.06',watermark:'.03'});
+  document.getElementById('introMapLens').innerHTML=_introMakeMap({land:'.25',grid:'.15',coord:'.25',route:'.8',routeHalf:'.4',compass:'.3',watermark:'.15'});
+
+  const BODY_FF='"EB Garamond","Iowan Old Style","Palatino Linotype",Palatino,serif';
+  const BODY_FONT=`18px ${BODY_FF}`;
+  const BODY_LH=30;
+  const HL_FF='"Playfair Display","Iowan Old Style",Palatino,serif';
+  const HL_TEXT='A WRITER WHO TRAVELS';
+  const GUTTER=60,COL_GAP=56,BOT_GAP=40,MIN_SW=40,NBP=760,NGUT=24;
+  const LENS_R=130,LENS_SP=0.07,NLENS_R=80;
+
+  const stage=document.getElementById('introStage');
+  const mapLensEl=document.getElementById('introMapLens');
+
+  const lensRing=document.createElement('div');
+  lensRing.className='intro-lens-ring';
+  const cross=document.createElement('div');
+  cross.className='intro-lens-cross';
+  lensRing.appendChild(cross);
+  stage.appendChild(lensRing);
+
+  const lens={x:-999,y:-999,tx:-999,ty:-999};
+  let mouseOn=false;
+
+  await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,2000))]);
+
+  const BODY_TEXT=`From Berlin to Trieste, from Samarkand to Bishkek, from the banks of the Ganges to the Golden Triangle, from Sarajevo to Tirana. Over the course of a decade, Liu Zichao traversed the most hidden corners of the Eurasian continent and returned with four works of travel literature. He is not a thrill-seeker but a wanderer, recording the textures of our era with a calm, perceptive voice in places the world has forgotten or is in the process of transforming.
+
+In the summer of 2014, he traveled through the heartland of Central Europe. Setting out from Berlin, he passed through Prague, Vienna, and Budapest, heading south until he reached Trieste. This was no simple tour of cities but a journey through the ruins of history in search of the European soul. In the Old Town Square of Prague, he heard the echo of Kafka. In the coffeehouses of Vienna, he traced the yesterday's world that Zweig once described. The result was Before Midnight, the book that established him as one of the most important voices in a new generation of travel writing.
+
+Over the next five years, he ventured six times into the depths of Central Asia. He crossed five "Stan" nations: Kazakhstan, Uzbekistan, Kyrgyzstan, Tajikistan, and Turkmenistan. This vast vacuum left by the collapse of the Soviet Union sits at the final edge of globalization. There, he witnessed how the legacy of an empire is being rewritten, how an ancient nomadic civilization struggles to survive the shock of modernity. Among the Stans is a tender gaze upon a forgotten land.
+
+In 2022, he turned in another direction, following the path of the monsoon through South and Southeast Asia. From the banks of the Ganges to the Golden Triangle of northern Myanmar, from the Thai-Cambodian border to the volcanoes of Indonesia. The humid tropical air, the call to prayer from mosques, ferries on rivers, pagodas deep in the jungle. Everything unfolds slowly to the rhythm of the monsoon. Chasing the Monsoon is a sensory journey through the tropics, every sense fully alive.
+
+His most recent journey led to the Balkan Peninsula. From north to south, from winter into spring, across eight countries and twenty-three cities. In the borderland where Eastern and Western civilizations collide, in the historical crevice between the Ottoman and Habsburg empires, between the ruins of war and the sweetness of honey. The bullet-scarred walls of Sarajevo, the stone bridge of Mostar, the monasteries of Kosovo, the bunkers of Albania. Each place is a footnote of history. Land of Blood and Honey bears witness to the world's fragility and vastness.
+
+The essence of travel writing is not recording landscapes but recording people. What makes Liu Zichao's prose special is that he never looks down upon those he meets. He sits in the felt tent of a Central Asian herder drinking fermented mare's milk, chats with old soldiers about war in a Balkan tavern, discusses livelihood with street vendors beside a Southeast Asian night market. His perspective is equal, curious, and restrained. He draws no conclusions, applies no labels, and simply presents with fidelity the lives of ordinary people overlooked by grand narratives.
+
+As Xu Zhiyuan has said, he is "the most outstanding travel writer of his generation." The historian Luo Xin praised his work for "setting the standard for travel writing to come." The True Story Award jury called Among the Stans "a rare and extraordinary work of literature." Behind these accolades is a writer who has walked and written, day after day, for a decade, charting a map of our time between the ruins and rebirth of globalization.
+
+His map is not geographic but spiritual. Each book is a coordinate, marking a corner of human experience. From the melancholy of Central Europe to the vastness of Central Asia, from the density of monsoon Asia to the fractures of the Balkans. These four coordinates, connected, form a complete portrait of the contemporary world. On this map, there is no center and no periphery. There are only encounters and understanding between people.`;
+
+  const PQ_TEXTS=[
+    '"The most outstanding travel writer of his generation." — Xu Zhiyuan',
+    '"Setting the standard for travel writing to come." — Luo Xin, historian',
+  ];
+
+  const preparedBody=prepareWithSegments(BODY_TEXT.slice(1),BODY_FONT);
+  const PQ_FONT=`italic 18px "EB Garamond", ${BODY_FF}`;
+  const PQ_LH=26;
+  const preparedPQ=PQ_TEXTS.map(t=>prepareWithSegments(t,PQ_FONT));
+  const pqSpecs=[
+    {prepared:preparedPQ[0],placement:{colIdx:0,yFrac:0.45,wFrac:0.6,side:'right'}},
+    {prepared:preparedPQ[1],placement:{colIdx:1,yFrac:0.38,wFrac:0.55,side:'left'}},
+  ];
+
+  const DC_LINES=3,DC_SIZE=BODY_LH*DC_LINES-4;
+  const DC_FONT=`700 ${DC_SIZE}px ${HL_FF}`;
+  const DC_CHAR=BODY_TEXT[0];
+  const prepDC=prepareWithSegments(DC_CHAR,DC_FONT);
+  let dcW=0;
+  walkLineRanges(prepDC,9999,l=>{dcW=l.width});
+  const DC_TOTAL_W=Math.ceil(dcW)+14;
+
+  const dcEl=document.createElement('div');
+  dcEl.className='intro-dropcap';
+  dcEl.textContent=DC_CHAR;
+  dcEl.style.font=DC_FONT;
+  dcEl.style.lineHeight=`${DC_SIZE}px`;
+  stage.appendChild(dcEl);
+
+  const bodyPool=[],hlPool=[],pqLinePool=[],pqBoxPool=[];
+  function syncPool(pool,n,create){
+    while(pool.length<n){const el=create();stage.appendChild(el);pool.push(el)}
+    for(let i=0;i<pool.length;i++)pool[i].style.display=i<n?'':'none'
+  }
+
+  let cHW=-1,cHH=-1,cHS=24,cHL=[];
+  function fitHL(maxW,maxH,maxS=88){
+    if(maxW===cHW&&maxH===cHH)return{s:cHS,l:cHL};
+    cHW=maxW;cHH=maxH;
+    let lo=20,hi=maxS,best=lo,bestL=[];
+    while(lo<=hi){
+      const s=Math.floor((lo+hi)/2);
+      const font=`700 ${s}px ${HL_FF}`;
+      const lh=Math.round(s*0.95);
+      const p=prepareWithSegments(HL_TEXT,font);
+      let bw=false,lc=0;
+      walkLineRanges(p,maxW,l=>{lc++;if(l.end.graphemeIndex!==0)bw=true});
+      if(!bw&&lc*lh<=maxH){
+        best=s;
+        const r=layoutWithLines(p,maxW,lh);
+        bestL=r.lines.map((l,i)=>({x:0,y:i*lh,text:l.text,width:l.width}));
+        lo=s+1;
+      }else hi=s-1;
+    }
+    cHS=best;cHL=bestL;
+    return{s:best,l:bestL}
+  }
+
+  function carve(base,blocked){
+    let slots=[base];
+    for(const iv of blocked){
+      const next=[];
+      for(const s of slots){
+        if(iv.right<=s.left||iv.left>=s.right){next.push(s);continue}
+        if(iv.left>s.left)next.push({left:s.left,right:iv.left});
+        if(iv.right<s.right)next.push({left:iv.right,right:s.right});
+      }
+      slots=next;
+    }
+    return slots.filter(s=>s.right-s.left>=MIN_SW)
+  }
+
+  function circIv(cx,cy,r,bt,bb,hp,vp){
+    const t=bt-vp,b=bb+vp;
+    if(t>=cy+r||b<=cy-r)return null;
+    const dy=cy>=t&&cy<=b?0:cy<t?t-cy:cy-b;
+    if(dy>=r)return null;
+    return{left:cx-Math.sqrt(r*r-dy*dy)-hp,right:cx+Math.sqrt(r*r-dy*dy)+hp}
+  }
+
+  function layCol(prepared,cur,rx,ry,rw,rh,lh,circles,rects,single){
+    let cursor=cur,lt=ry;
+    const lines=[];
+    let done=false;
+    while(lt+lh<=ry+rh&&!done){
+      const blocked=[];
+      for(const c of circles){const iv=circIv(c.cx,c.cy,c.r,lt,lt+lh,c.hp,c.vp);if(iv)blocked.push(iv)}
+      for(const r of rects){if(lt+lh<=r.y||lt>=r.y+r.h)continue;blocked.push({left:r.x,right:r.x+r.w})}
+      const slots=carve({left:rx,right:rx+rw},blocked);
+      if(!slots.length){lt+=lh;continue}
+      const ord=single?[slots.reduce((a,b)=>(b.right-b.left>a.right-a.left)?b:a)]:[...slots].sort((a,b)=>a.left-b.left);
+      for(const sl of ord){
+        const line=layoutNextLine(prepared,cursor,sl.right-sl.left);
+        if(!line){done=true;break}
+        lines.push({x:Math.round(sl.left),y:Math.round(lt),text:line.text,width:line.width});
+        cursor=line.end;
+      }
+      lt+=lh;
+    }
+    return{lines,cursor}
+  }
+
+  let lastBL=[],lastHL=[],lastPL=[];
+  function lEq(a,b){
+    if(a.length!==b.length)return false;
+    for(let i=0;i<a.length;i++)if(a[i].x!==b[i].x||a[i].y!==b[i].y||a[i].text!==b[i].text)return false;
+    return true
+  }
+
+  function introRender(){
+    if(introEl.classList.contains('dismissed'))return;
+    const W=document.documentElement.clientWidth;
+    const H=document.documentElement.clientHeight;
+    const narrow=W<NBP;
+    const gut=narrow?NGUT:GUTTER;
+    const gap=narrow?28:COL_GAP;
+    const botGap=narrow?20:BOT_GAP;
+    const lR=narrow?NLENS_R:LENS_R;
+
+    if(mouseOn){lens.x+=(lens.tx-lens.x)*LENS_SP;lens.y+=(lens.ty-lens.y)*LENS_SP}
+
+    const circles=[];
+    if(mouseOn&&lens.x>-100)circles.push({cx:lens.x,cy:lens.y,r:lR,hp:narrow?10:16,vp:narrow?3:5});
+
+    const hlW=Math.min(W-gut*2,1000);
+    const hlMaxH=Math.floor(H*(narrow?0.18:0.24));
+    const{s:hlS,l:hlLines}=fitHL(hlW,hlMaxH,narrow?36:88);
+    const hlLH=Math.round(hlS*0.95);
+    const hlFont=`700 ${hlS}px ${HL_FF}`;
+    const hlH=hlLines.length*hlLH;
+
+    const bodyTop=gut+hlH+(narrow?16:28);
+    const bodyH=H-bodyTop-botGap;
+    const cols=narrow?1:W>1000?3:W>640?2:1;
+    const totalGut=gut*2+gap*(cols-1);
+    const maxCW=Math.min(W,1200);
+    const colW=Math.floor((maxCW-totalGut)/cols);
+    const cLeft=Math.round((W-(cols*colW+(cols-1)*gap))/2);
+
+    const dcRect={x:cLeft-2,y:bodyTop-2,w:DC_TOTAL_W,h:DC_LINES*BODY_LH+2};
+
+    const pqR=[];
+    if(!narrow&&cols>1){
+      for(const{prepared,placement}of pqSpecs){
+        if(placement.colIdx>=cols)continue;
+        const pw=Math.round(colW*placement.wFrac);
+        // First pass without circles to get height
+        const pLinesStatic=layoutWithLines(prepared,pw-20,PQ_LH).lines;
+        const ph=pLinesStatic.length*PQ_LH+16;
+        const cx=cLeft+placement.colIdx*(colW+gap);
+        const px=placement.side==='right'?cx+colW-pw:cx;
+        const py=Math.round(bodyTop+bodyH*placement.yFrac);
+        // Re-layout with circle obstacles so text avoids lens
+        const pqResult=layCol(prepared,{segmentIndex:0,graphemeIndex:0},px+20,py+8,pw-20,ph,PQ_LH,circles,[],false);
+        pqR.push({x:px,y:py,w:pw,h:ph,lines:pqResult.lines,ci:placement.colIdx});
+      }
+    }
+
+    const allBody=[];
+    let cursor={segmentIndex:0,graphemeIndex:0};
+    for(let ci=0;ci<cols;ci++){
+      const cx=cLeft+ci*(colW+gap);
+      const rects=[];
+      if(ci===0)rects.push(dcRect);
+      for(const pq of pqR)if(pq.ci===ci)rects.push({x:pq.x,y:pq.y,w:pq.w,h:pq.h});
+      const r=layCol(preparedBody,cursor,cx,bodyTop,colW,bodyH,BODY_LH,circles,rects,narrow);
+      allBody.push(...r.lines);
+      cursor=r.cursor;
+    }
+    const allPQ=[];
+    for(const pq of pqR)allPQ.push(...pq.lines);
+
+    if(!lEq(lastHL,hlLines)){
+      syncPool(hlPool,hlLines.length,()=>{const el=document.createElement('span');el.className='intro-headline';return el});
+      for(let i=0;i<hlLines.length;i++){
+        const el=hlPool[i],l=hlLines[i];
+        el.textContent=l.text;el.style.left=`${gut+l.x}px`;el.style.top=`${gut+l.y}px`;
+        el.style.font=hlFont;el.style.lineHeight=`${hlLH}px`;
+      }
+      lastHL=hlLines;
+    }
+    if(!lEq(lastBL,allBody)){
+      syncPool(bodyPool,allBody.length,()=>{const el=document.createElement('span');el.className='intro-line';return el});
+      for(let i=0;i<allBody.length;i++){
+        const el=bodyPool[i],l=allBody[i];
+        el.textContent=l.text;el.style.left=`${l.x}px`;el.style.top=`${l.y}px`;
+        el.style.font=BODY_FONT;el.style.lineHeight=`${BODY_LH}px`;
+      }
+      lastBL=allBody;
+    }
+    if(!lEq(lastPL,allPQ)){
+      syncPool(pqLinePool,allPQ.length,()=>{const el=document.createElement('span');el.className='intro-pq-line';return el});
+      for(let i=0;i<allPQ.length;i++){
+        const el=pqLinePool[i],l=allPQ[i];
+        el.textContent=l.text;el.style.left=`${l.x}px`;el.style.top=`${l.y}px`;
+        el.style.font=PQ_FONT;el.style.lineHeight=`${PQ_LH}px`;
+      }
+      lastPL=allPQ;
+    }
+
+    dcEl.style.left=`${cLeft}px`;dcEl.style.top=`${bodyTop}px`;
+    // Hide drop cap if lens overlaps it
+    if(circles.length){
+      const c=circles[0];
+      const dcCx=cLeft+DC_TOTAL_W/2,dcCy=bodyTop+DC_SIZE/2;
+      const ddx=c.cx-dcCx,ddy=c.cy-dcCy;
+      dcEl.style.opacity=Math.sqrt(ddx*ddx+ddy*ddy)<c.r+DC_TOTAL_W/2?'0':'1';
+    }else{dcEl.style.opacity='1'}
+
+    syncPool(pqBoxPool,pqR.length,()=>{const el=document.createElement('div');el.className='intro-pq-box';return el});
+    for(let i=0;i<pqR.length;i++){
+      const el=pqBoxPool[i],pq=pqR[i];
+      el.style.left=`${pq.x}px`;el.style.top=`${pq.y}px`;el.style.width=`${pq.w}px`;el.style.height=`${pq.h}px`;
+      // Hide pq border if lens overlaps it
+      if(circles.length){
+        const c=circles[0];
+        const bx=pq.x,byt=pq.y,byb=pq.y+pq.h;
+        const closestY=Math.max(byt,Math.min(c.cy,byb));
+        const ddx=c.cx-bx,ddy=c.cy-closestY;
+        el.style.opacity=Math.sqrt(ddx*ddx+ddy*ddy)<c.r+10?'0':'1';
+      }else{el.style.opacity='1'}
+    }
+
+    const d=lR*2;
+    lensRing.style.left=`${lens.x-lR}px`;lensRing.style.top=`${lens.y-lR}px`;
+    lensRing.style.width=`${d}px`;lensRing.style.height=`${d}px`;
+    lensRing.style.opacity=mouseOn?'1':'0';
+
+    if(mouseOn&&lens.x>-100){
+      mapLensEl.style.clipPath=`circle(${lR}px at ${lens.x}px ${lens.y}px)`;
+    }else{
+      mapLensEl.style.clipPath='circle(0px at 0px 0px)';
+    }
+
+    const dx=lens.tx-lens.x,dy=lens.ty-lens.y;
+    if(mouseOn&&dx*dx+dy*dy>0.3)requestAnimationFrame(introRender);
+  }
+
+  let raf=null;
+  function sched(){if(!raf)raf=requestAnimationFrame(()=>{raf=null;introRender()})}
+
+  stage.addEventListener('pointermove',e=>{
+    lens.tx=e.clientX;lens.ty=e.clientY;
+    if(!mouseOn){mouseOn=true;lens.x=e.clientX;lens.y=e.clientY}
+    cancelAnimationFrame(raf);raf=null;requestAnimationFrame(introRender);
+  });
+  stage.addEventListener('pointerleave',()=>{mouseOn=false;sched()});
+  window.addEventListener('resize',sched);
+
+  sched();
+  setTimeout(()=>introRender(),300);
 }
 </script>
 </body>
