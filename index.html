@@ -409,13 +409,14 @@ footer{background:var(--dark);border-top:1px solid var(--ink05);padding:4rem 3re
   .nav-controls{margin-right:.5rem}
   .mobile-journeys{display:block;padding:0 0 1rem}
   .map-hero{min-height:auto}
-  .map-canvas{padding:0 1rem 1.5rem;min-height:auto;flex:none}
+  .map-canvas{padding:0 .5rem 1rem;min-height:auto;flex:none}
   .map-canvas .map-svg{max-width:100%}
   .map-header{position:relative;padding:5rem 1.5rem 1rem}
   .map-nav{display:none}
   .map-bottom{display:none}
   .map-scroll-hint{display:none}
   .journey-group .city-dot circle{r:3.5}
+  .journey-group .city-dot text{font-size:11px}
 }
 
 /* Reduced motion */
@@ -1206,11 +1207,15 @@ document.getElementById('langToggle').addEventListener('click',()=>{
 const mjCards=document.getElementById('mjCards');
 const mjDots=document.querySelectorAll('.mj-dot');
 if(mjCards){
-  // Scroll snap handles the swipe; update dots on scroll
-  mjCards.addEventListener('scroll',()=>{
+  let mjIdx=-1;
+  const syncMj=()=>{
     const idx=Math.round(mjCards.scrollLeft/mjCards.offsetWidth);
+    if(idx===mjIdx)return;
+    mjIdx=idx;
     mjDots.forEach((d,i)=>{d.classList.toggle('active',i===idx)});
-  });
+    if(typeof showJ==='function')showJ(idx);
+  };
+  mjCards.addEventListener('scroll',syncMj,{passive:true});
   // Dot click scrolls to card
   mjDots.forEach(d=>{
     d.addEventListener('click',()=>{
@@ -1222,6 +1227,10 @@ if(mjCards){
   document.querySelectorAll('.mj-city[data-city]').forEach(c=>{
     c.addEventListener('click',()=>openLB(c.dataset.city));
   });
+  // Initial sync so the map highlights the first journey on mobile
+  if(matchMedia('(max-width:900px)').matches){
+    setTimeout(()=>{mjIdx=-1;syncMj()},100);
+  }
 }
 
 // Intro dismiss
