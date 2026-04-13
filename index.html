@@ -310,9 +310,12 @@ footer{background:var(--dark);border-top:1px solid var(--ink05);padding:4rem 3re
   .nav-logo{font-size:.9rem}
   .nav-controls{margin-right:.25rem;gap:.25rem}
   .nav-ctrl-btn{padding:6px 4px;font-size:.7rem}
-  .map-header{padding:4.5rem 1rem 0}
+  .map-header{padding:4.5rem 1rem .5rem}
   .map-bottom{padding:0 1rem 1rem}
   .map-nav-btn{font-size:.68rem;padding:.4rem .8rem}
+  .map-canvas{padding:0 .5rem 1rem}
+  .map-id-tagline{font-size:.82rem;max-width:none}
+  .map-id-cn{letter-spacing:.3em}
   .sec{padding:3rem 1rem}
   .sec-title{margin-bottom:1.8rem}
   .about{padding:3rem 1rem}
@@ -405,10 +408,14 @@ footer{background:var(--dark);border-top:1px solid var(--ink05);padding:4rem 3re
   .nav-burger{display:block}
   .nav-controls{margin-right:.5rem}
   .mobile-journeys{display:block;padding:0 0 1rem}
-  .map-canvas{display:none}
-  .map-header{position:relative;padding:5rem 1.5rem 1.5rem}
+  .map-hero{min-height:auto}
+  .map-canvas{padding:0 1rem 1.5rem;min-height:auto;flex:none}
+  .map-canvas .map-svg{max-width:100%}
+  .map-header{position:relative;padding:5rem 1.5rem 1rem}
   .map-nav{display:none}
   .map-bottom{display:none}
+  .map-scroll-hint{display:none}
+  .journey-group .city-dot circle{r:3.5}
 }
 
 /* Reduced motion */
